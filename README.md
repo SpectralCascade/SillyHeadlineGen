@@ -1,2 +1,2 @@
 # SillyHeadlineGen
-Parody news headlines generator using machine learning
+Classifier of parody vs realistic news headlines using machine learning
