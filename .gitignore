@@ -127,3 +127,20 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+
+
+# too big!
+src/data/allCountries.txt
+src/all_countries_dict.json
+src/data/all_countries_dict.json
+
+
+
+
+
+
+
+
+
+
