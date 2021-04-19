@@ -8,5 +8,5 @@ if userInput == 1:
 elif userInput == 2:
     print("You've picked to input a headline")
 else:
-    print("Choose either 1 2 or 3")
+    print("Choose either 1 or 2")
 
