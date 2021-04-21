@@ -1,7 +1,19 @@
 import requests
 from bs4 import BeautifulSoup
 import csv
+import CV from CV
 
+def categoriseArticle(headline, content):
+    cv_map = dict()
+    
+    region = "Region"
+    cv_map[region] = dict()
+    with open("data/Countries-Continents.csv") as csvfile:
+        reader = csv.reader(csvfile)
+        for row in reader:
+            
+    for term in CV[region]:
+        cv_map[region][term] = dict()
 
 def chaserScrape():
     for i in range(10):
