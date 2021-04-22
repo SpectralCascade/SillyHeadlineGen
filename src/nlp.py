@@ -1,22 +1,15 @@
 import csv
+import json
 import zipfile
+import os.path
 from names_dataset import NameDatasetV1
 
 # NLP
 import spacy
+from spacy.pipeline import merge_entities
 nlp = spacy.load("en_core_web_sm")
-import json
-
-# object and subject constants
-OBJECT_DEPS = {"dobj", "dative", "attr", "oprd"}
-SUBJECT_DEPS = {"nsubj", "nsubjpass", "csubj", "agent", "expl"}
-# tags that define wether the word is wh-
-WH_WORDS = {"WP", "WP$", "WRB"}
-
-#import pandas as pd
-#import numpy as np
-#from mlxtend.frequent_patterns import apriori, association_rules
-#from mlxtend.preprocessing import TransactionEncoder
+# This makes sure entities such as person names are joined together properly
+nlp.add_pipe("merge_entities")
 
 def determine_subject_type(subject):
     splitted = subject.split(" ");
@@ -25,55 +18,71 @@ def determine_subject_type(subject):
     name_database = NameDatasetV1()
     if (name_database.search_first_name(splitted[0]) or name_database.search_last_name(splitted[0]) or (len(splitted) > 1 and (name_database.search_first_name(splitted[-1])  or name_database.search_last_name(splitted[-1])))):
         # Must be a person
-        return "person"
+        return "PERSON"
     else:
         with open('data/world-cities.csv', encoding='utf-8') as csv_file:
             reader = csv.reader(csv_file, delimiter=',')
             for row in reader:
                 if (subject == row[0]):
                     # Is a city!
-                    return "city"
+                    return "GPE"
         
         # Check the big database - needs extraction first
+        #if (not os.path.isfile("all_countries_dict.json")):
+            #print("First time use, extracting country names database...")
         with zipfile.ZipFile('data/all_countries_dict.zip', 'r') as zipObj:
             zipObj.extractall()
         
         with open('all_countries_dict.json', encoding='utf-8') as json_file:
             loaded = json.load(json_file)
             if (subject in loaded):
-                # Is a place!
-                return "place"
+                # Is a country!
+                return "GPE"
                     
-        return "unknown"
+        return "UNKNOWN"
+
+def nlp_analyse(doc):
+    print("Entities:")
+    for ent in doc.ents:
+        print(ent.text + " => " + ent.label_ + " (" + spacy.explain(ent.label_) + ")")
+    print("\nTokens:")
+    spans = []
+    
+    for token in doc:
+        pos = spacy.explain(token.pos_)
+        dep = spacy.explain(token.dep_)
+        if (pos == None):
+            pos = "unknown"
+        if (dep == None):
+            dep = "unknown"
+        print(token.text + " | " + token.pos_ + " (" + pos + ") | " + token.dep_ + " (" + dep + ")" + " | Head: " + token.head.text + " | Children: \"" + str([t.text for t in token.children]) + "\"")
+    
 
 def nlp_extract(headline):
-    # First use spacy to extract SVO
-    # https://github.com/Dimev/Spacy-SVO-extraction/blob/master/main.py
-    subjects = []
-    objects = []
-    verbs = []
+    data = dict()
+    data["entities"] = dict()
+    data["verbs"] = []
+    entities = data["entities"]
+    verbs = data["verbs"]
+
+    # Use  spaCy to extract entities and verbs
     doc = nlp(headline)
     for token in doc:
-        # is this a verb?
+        # Is this a verb?
         if token.pos_ == "VERB":
             verbs.append(token.text)
-        # is this the object?
-        if token.dep_ in OBJECT_DEPS or token.head.dep_ in OBJECT_DEPS:
-            objects.append(token.text)
-        # is this the subject?
-        if token.dep_ in SUBJECT_DEPS or token.head.dep_ in SUBJECT_DEPS:
-            subjects.append(token.text)
+        # Is this a proper noun (if so, it's probably an entity we care about).
+        if token.pos_ == "PROPN":
+            entities[token.text] = "UNKNOWN"
+    # Catch any entities that were missed by the proper noun check and assign type label
+    for ent in doc.ents:
+        entities[ent.text] = ent.label_
+        
+    # Now go over entities with unknown types and try and determine them
+    for key in entities:
+        if (entities[key] == "UNKNOWN"):
+            entities[key] = determine_subject_type(key)
+    
+    return data
 
-
-    '''for verb in verbs:
-        print("Found verb " + verb)
-        print(determine_subject_type(verb))'''
-    for object in objects:
-        print("Found object " + object)
-        print(determine_subject_type(object))
-    for subject in subjects:
-        print("Found subject " + subject)
-        #for word in subject:
-        print(determine_subject_type(subject))
-
-nlp_extract("Sadiq Khans guide to a legal weed London")
+print(nlp_extract("John Smith: \'I was sacked in Exeter :('"))
