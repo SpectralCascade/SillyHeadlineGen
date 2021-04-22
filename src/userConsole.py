@@ -8,13 +8,44 @@
 import urllib3
 import urllib3.request
 import urllib3.exceptions
+import re
 
-userInput = int(input("Hello, this is the parody headline checker!S \n To begin choose between:" \
-                  "\n 1.Input a URL" \
-                  "\n 2. Input a headline" \
-                  "\n Choose 1 or 2 \n ")) 
+from CV import CV
 
-if userInput == 1:
+def filterChoice(filterFile):
+    noOfFilters = int(input('Do you want to filter ' + filterFile +' by 1 or multiple terms? Choose \n 1. 1 term' \
+        '\n 2. Multiple terms \n'))
+    
+    if noOfFilters == 1:
+        print("What term to you want to filter by? Here are the categories:")
+        for k, v in CV.items():
+            print('{key}: {values}'.format(key=k, values=', '.join('{}'.format(', '.join(x.split())) for x in v)))            
+        filterTerm = input("What term do you want to filter by? \n")
+        if(any(filterTerm in value for value in CV.values())):
+            print('Filter by ' + filterTerm)
+            # MACHINE LEARNING
+        else:
+            print("Please choose a category to filter by")
+            
+    elif noOfFilters == 2:
+        print("What term to you want to filter by? Here are the categories:")
+        for k, v in CV.items():
+            print('{key}: {values}'.format(key=k, values=', '.join('{}'.format(', '.join(x.split())) for x in v)))            
+        filterTerms = input("What terms do you want to filter by? (Split up the terms with a ', ' (comma)) \n")
+        terms_list = re.split("[, ] ", filterTerms)
+        print(terms_list)
+        # MACHINE LEARNING
+        
+    else:
+        print('Choose either options 1 or 2')
+        
+def HeadlineInput():
+    print("You've picked to input a headline")
+    Headline = input("Please input in a headline:\n")
+    filterChoice(Headline)
+
+def URLInput():
+    # NEEDS TO BE LOOKED AT
     print("You've picked to input a URL")
     URL = input("Please input in a URL:\n")
     http = urllib3.PoolManager()
@@ -28,11 +59,20 @@ if userInput == 1:
             print ('The server couldn\'t fulfill the request.')
             print ('Error code: ', e.code)
     else:
-        print ("URL is good!")
-        
+        print ("URL is valid!")
+        filterChoice(URL)
+
+
+
+userInput = int(input("Hello, this is the parody headline checker!S \n To begin choose between:" \
+                  "\n 1.Input a URL" \
+                  "\n 2. Input a headline" \
+                  "\n Choose 1 or 2 \n ")) 
+if userInput == 1:
+    URLInput()
+                
 elif userInput == 2:
-    print("You've picked to input a headline")
-    Headline = input("Please input in a headline:\n")
+    HeadlineInput()
     
 else:
     print("Choose either 1 or 2")
