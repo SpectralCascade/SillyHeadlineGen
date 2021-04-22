@@ -39,9 +39,10 @@ class HeadlineNLP:
                 for row in reader:
                     self.database["GPE"].add(row[0])
             
-            # Country names database is so big it has to be compressed for git
-            with zipfile.ZipFile('data/all_countries_dict.zip', 'r') as zipObj:
-                zipObj.extractall()
+            if (not os.path.isfile("./all_countries_dict.json")):
+                # Country names database is so big it has to be compressed for git
+                with zipfile.ZipFile('data/all_countries_dict.zip', 'r') as zipObj:
+                    zipObj.extractall()
             
             with open('all_countries_dict.json', encoding='utf-8') as json_file:
                 loaded = json.load(json_file)
@@ -85,7 +86,7 @@ class HeadlineNLP:
         data["verbs"] = []
         entities = data["entities"]
         verbs = data["verbs"]
-
+        
         # Use spaCy to extract entities and verbs
         doc = self.nlp(headline)
         for token in doc:
@@ -98,7 +99,7 @@ class HeadlineNLP:
         # Catch any entities that were missed by the proper noun check and assign type label
         for ent in doc.ents:
             entities[ent.text] = ent.label_
-            
+        
         # Now go over entities with unknown types and try and determine them
         for key in entities:
             if (entities[key] == "UNKNOWN"):
