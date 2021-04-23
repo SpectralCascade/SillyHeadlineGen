@@ -69,7 +69,38 @@ class Learner:
                 bayes[self.dataset["answers"][row]][col][dataset[col][row]] += inc
         #print(bayes)
 
-if (__name__ == "__main__"):
+# Converts headline into machine learning format
+def headlineToTrainingEntry(headline):
+    output = [0, 0] # people, gpe
+    # Perform NLP on headline
+    data = nlp.GetHeadlineNLP().nlp_extract(headline)
+    for ent in data["entities"]:
+        if (data["entities"][ent] == "PERSON"):
+            output[0] += 1
+        elif (data["entities"][ent] == "GPE"):
+            output[1] += 1
+    # Make sure data is all strings
+    for i in range(len(output)):
+        output[i] = str(output[i])
+    return output
+
+# Takes list of headlines and list of yes/no parody or not, returns trained learner
+def trainLearner(headlines, parodyOrNot):
+    gpe = [];
+    people = [];
+    
+    for headline in headlines:
+        data = headlineToTrainingEntry(headline);
+        people.append(data[0])
+        gpe.append(data[1])
+    
+    learner = Learner({"data" : [people, gpe], "answers" : parodyOrNot})
+    #learner = Learner({"data" : [people, gpe], "answers" : ["Yes"] * 10 + ["No"] * 10})
+    print(learner.dataset)
+    learner.train()
+    return learner
+
+def demo(headline):
     # Scrape a bunch of headlines for the training set
     headlines = scrape.dailymashScrape(10)
     
@@ -87,36 +118,10 @@ if (__name__ == "__main__"):
     
     print("Headlines: " + str(headlines))
     
-    gpe = [];
-    people = [];
+    #headline = "A minuscule jewel-studded thong: five things to buy now the contactless limit is £100"
+    to_predict = headlineToTrainingEntry(headline)
     
-    for headline in headlines:
-        data = nlp.GetHeadlineNLP().nlp_extract(headline)
-        gpe_num = 0
-        people_num = 0
-        for ent in data["entities"]:
-            if (data["entities"][ent] == "PERSON"):
-                people_num += 1
-            elif (data["entities"][ent] == "GPE"):
-                gpe_num += 1
-        gpe.append(str(gpe_num))
-        people.append(str(people_num))
-    
-    learner = Learner({"data" : [people, gpe], "answers" : ["Yes"] * 10 + ["No"] * 10})
-    print(learner.dataset)
-    learner.train()
-    
-    predict_headline = "A minuscule jewel-studded thong: five things to buy now the contactless limit is £100"
-    
-    data = nlp.GetHeadlineNLP().nlp_extract(predict_headline)
-    gpe_num = 0
-    people_num = 0
-    for ent in data["entities"]:
-        if (data["entities"][ent] == "PERSON"):
-            people_num += 1
-        elif (data["entities"][ent] == "GPE"):
-            gpe_num += 1
-    to_predict = [str(people_num), str(gpe_num)]
+    learner = trainLearner(headlines, ["Yes"] * 10 + ["No"] * 10)
     
     print("Input data: " + str(to_predict))
     print("Prediction model: " + str(learner.model))
@@ -129,6 +134,6 @@ if (__name__ == "__main__"):
             best = v
     print(data)
     print("Determined best match to be " + best + " with a score of " + str(best_score))
-    while (True):
-        pass
 
+if (__name__ == "__main__"):
+    demo("A minuscule jewel-studded thong: five things to buy now the contactless limit is £100")

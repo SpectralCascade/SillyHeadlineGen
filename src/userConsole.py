@@ -13,6 +13,8 @@ import requests
 
 from CV import CV
 
+import ml
+
 def filterChoice(filterFile):
     noOfFilters = int(input('Do you want to filter ' + filterFile +' by 1 or multiple terms? Choose \n 1. 1 term' \
         '\n 2. Multiple terms \n'))
@@ -36,7 +38,6 @@ def filterChoice(filterFile):
         terms_list = re.split("[, ] ", filterTerms)
         print(terms_list)
         # MACHINE LEARNING
-        
     else:
         print('Choose either options 1 or 2')
         
@@ -44,6 +45,8 @@ def HeadlineInput():
     print("You've picked to input a headline")
     Headline = input("Please input in a headline:\n")
     filterChoice(Headline)
+    # Do machine learning
+    ml.demo(Headline)
 
 def URLInput():
     # NEEDS TO BE LOOKED AT
