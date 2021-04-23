@@ -21,12 +21,17 @@ class mrOutput:
 	def createXML(inputDict):
 		title = ET.Element(inputDict.get("Title"))
 		identifier1 = ET.SubElement(title, "Tasty : " + inputDict.get("Tasty"))
+		break1 = ET.SubElement(title, "\n")
 		identifier2 = ET.SubElement(title, "Fruity : " + inputDict.get("Fruity"))
+		break2 = ET.SubElement(title, "\n")
 		finalTree = ET.ElementTree(title)
 		with open('outputData.xml', 'w') as outputFile:
 			finalTree.write(outputFile, encoding='unicode')
 
 
+	def createXMLInStyle(inputDict):
+		for x in inputDict:
+			title = ET.Element.get(inputDict.get())
 
 	if  __name__ == "__main__":
 		#run the createJSON and createXML method

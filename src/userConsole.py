@@ -9,6 +9,7 @@ import urllib3
 import urllib3.request
 import urllib3.exceptions
 import re
+import requests
 
 from CV import CV
 
@@ -62,6 +63,21 @@ def URLInput():
         print ("URL is valid!")
         filterChoice(URL)
 
+def URLInputInStyle():
+    print("You've picked to input a URL")
+    validURL = False
+    while validURL == False:
+        URL = "http://" + input("Please input in a URL:\n")
+        try:
+            r = requests.get(URL)
+            if r.status_code == 200:
+                validURL = True
+                print('URL is valid!')
+                filterChoice(URL)
+            else:
+                print('URL is not valid or the server couldn\'t fufill the request') 
+        except requests.exceptions.ConnectionError:
+            print('We failed to reach the server you supplied.')
 
 
 userInput = int(input("Hello, this is the parody headline checker!S \n To begin choose between:" \
@@ -69,7 +85,7 @@ userInput = int(input("Hello, this is the parody headline checker!S \n To begin 
                   "\n 2. Input a headline" \
                   "\n Choose 1 or 2 \n ")) 
 if userInput == 1:
-    URLInput()
+    URLInputInStyle()
                 
 elif userInput == 2:
     HeadlineInput()
