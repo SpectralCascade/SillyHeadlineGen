@@ -106,7 +106,7 @@ if (__name__ == "__main__"):
     print(learner.dataset)
     learner.train()
     
-    predict_headline = "Ryan Giggs charged with assaulting two women"
+    predict_headline = "A minuscule jewel-studded thong: five things to buy now the contactless limit is £100"
     
     data = nlp.GetHeadlineNLP().nlp_extract(predict_headline)
     gpe_num = 0
@@ -116,7 +116,7 @@ if (__name__ == "__main__"):
             people_num += 1
         elif (data["entities"][ent] == "GPE"):
             gpe_num += 1
-    to_predict = [people_num, gpe_num]
+    to_predict = [str(people_num), str(gpe_num)]
     
     print("Input data: " + str(to_predict))
     print("Prediction model: " + str(learner.model))
