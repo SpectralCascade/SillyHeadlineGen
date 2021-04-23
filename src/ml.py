@@ -1,3 +1,6 @@
+import nlp
+import soupScraping as scrape
+
 # Machine learning class for training basic classification
 class Learner:
     # Takes an array of possible classification values e.g. ["Yes", "No"] and
@@ -67,10 +70,54 @@ class Learner:
         #print(bayes)
 
 if (__name__ == "__main__"):
-    learner = Learner({"data" : [["High", "Low", "Medium", "Low", "High", "Low"], ["Busy", "Quiet", "Quiet", "Busy", "Quiet", "Busy"]], "answers" : ["No", "Yes", "Yes", "No", "No", "Yes"]})
+    # Scrape a bunch of headlines for the training set
+    headlines = scrape.dailymashScrape(10)
+    
+    # Some random headlines from the BBC
+    headlines = headlines + ["Greta Thunberg becomes 'bunny hugger' on Twitter",
+        "Covid-19: MP claims 'outrage' at dropped charge for 150-guest funeral",
+        "Convicted Post Office workers have names cleared",
+        "Covid: India on UK travel red list as Covid crisis grows",
+        "UK's coronavirus infection levels continue to fall",
+        "Desperation as Indian hospitals buckle under Covid",
+        "Brexit: UK-EU talks on Northern Ireland 'to intensify'",
+        "US joins race to find stricken Indonesia submarine",
+        "Putin opponent Navalny ends hunger strike in Russian jail",
+        "Malaria vaccine hailed as potential breakthrough"]
+    
+    print("Headlines: " + str(headlines))
+    
+    gpe = [];
+    people = [];
+    
+    for headline in headlines:
+        data = nlp.GetHeadlineNLP().nlp_extract(headline)
+        gpe_num = 0
+        people_num = 0
+        for ent in data["entities"]:
+            if (data["entities"][ent] == "PERSON"):
+                people_num += 1
+            elif (data["entities"][ent] == "GPE"):
+                gpe_num += 1
+        gpe.append(str(gpe_num))
+        people.append(str(people_num))
+    
+    learner = Learner({"data" : [people, gpe], "answers" : ["Yes"] * 10 + ["No"] * 10})
     print(learner.dataset)
     learner.train()
-    to_predict = ["High", "Quiet"]
+    
+    predict_headline = "Ryan Giggs charged with assaulting two women"
+    
+    data = nlp.GetHeadlineNLP().nlp_extract(predict_headline)
+    gpe_num = 0
+    people_num = 0
+    for ent in data["entities"]:
+        if (data["entities"][ent] == "PERSON"):
+            people_num += 1
+        elif (data["entities"][ent] == "GPE"):
+            gpe_num += 1
+    to_predict = [people_num, gpe_num]
+    
     print("Input data: " + str(to_predict))
     print("Prediction model: " + str(learner.model))
     data = learner.classify(to_predict)

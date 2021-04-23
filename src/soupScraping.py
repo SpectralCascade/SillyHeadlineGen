@@ -31,9 +31,6 @@ def categoriseArticle(headline, content):
     for word in words:
         for key in cv_map:
             terms = cv_map[key]
-            if (word == "Europe"):
-                print("Europe is here! Terms = " + str(terms))
-                wait = input()
             if (word in terms):
                 if (word not in categories):
                     categories[word] = 1
@@ -65,8 +62,10 @@ def chaserScrape():
                 writer.writerow([headlineString])
 
 # TODO: extract article contents
-def dailymashScrape():
-    for i in range(10):
+def dailymashScrape(max_headlines):
+    num = 0
+    all_headlines = []
+    for i in range(100):
         url = (f'https://www.thedailymash.co.uk/news/page/{i}')
         page = requests.get(url)
         soup1 = BeautifulSoup(page.content, 'html.parser')
@@ -81,8 +80,12 @@ def dailymashScrape():
                     headlineString = headline2.text
                     writer.writerow([headlineString])
                     # test categorisation
-                    print("Headline: " + headlineString + " | Categories: " + str(categoriseArticle(headlineString, "")))
-                    
+                    #print("Headline: " + headlineString + " | Categories: " + str(categoriseArticle(headlineString, "")))
+                    num += 1
+                    all_headlines.append(headlineString)
+                    if (num >= max_headlines):
+                        return all_headlines
+    return all_headlines
 
 
 def beavertonScrape():
@@ -101,4 +104,4 @@ def beavertonScrape():
                     headlineString = headline2.text
                     writer.writerow([headlineString])
 
-dailymashScrape()
+#dailymashScrape(40)

@@ -2,6 +2,7 @@ import csv
 import json
 import zipfile
 import os.path
+import sys
 from names_dataset import NameDatasetV1
 
 # NLP
@@ -56,6 +57,7 @@ class HeadlineNLP:
             if (subject in self.database[key]):
                 return key
             if (key == "PERSON"):
+                # TODO: better name identification.
                 splitted = subject.split(" ");
                 if (self.name_db.search_first_name(splitted[0]) or self.name_db.search_last_name(splitted[0]) or (len(splitted) > 1 and (self.name_db.search_first_name(splitted[-1])  or self.name_db.search_last_name(splitted[-1])))):
                     # Must be a person's name
@@ -107,4 +109,10 @@ class HeadlineNLP:
         
         return data
 
-print(GetHeadlineNLP().nlp_extract("John Smith: \'I was sacked in Exeter :('"))
+if (__name__ == "__main__"):
+    to_analyse = "John Smith: \'I was sacked in Exeter :('"
+    
+    if (len(sys.argv) > 1):
+        to_analyse = sys.argv[1]
+    
+    print(GetHeadlineNLP().nlp_extract(to_analyse))
