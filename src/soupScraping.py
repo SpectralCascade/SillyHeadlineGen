@@ -3,10 +3,11 @@ from bs4 import BeautifulSoup
 import csv
 import string
 
+
 def categoriseArticle(headline, content):
     categories = dict()
     cv_map = dict()
-    
+
     region = "Region"
     cv_map[region] = dict()
     with open("data/Countries-Continents.csv") as csvfile:
@@ -16,7 +17,7 @@ def categoriseArticle(headline, content):
             if (row[0] not in cv_map[region]):
                 cv_map[region][row[0]] = dict()
             cv_map[region][row[0]][row[1]] = 1
-    
+
     # Extract words from article headline and content
     # TODO: extract full subjects/objects/nouns so full country names work
     words = []
@@ -26,7 +27,7 @@ def categoriseArticle(headline, content):
     for word in content.split():
         word = word.translate(str.maketrans('', '', string.punctuation))
         words.append(word)
-    
+
     # Top level terms (i.e. Region, Culture and Subject)
     for word in words:
         for key in cv_map:
@@ -45,8 +46,9 @@ def categoriseArticle(headline, content):
                         categories[term] = 1
                     categories[word] += 1
                 break
-    
+
     return categories
+
 
 def chaserScrape():
     for i in range(10):
@@ -60,6 +62,7 @@ def chaserScrape():
             for headline in headlines:
                 headlineString = headline.text
                 writer.writerow([headlineString])
+
 
 # TODO: extract article contents
 def dailymashScrape(max_headlines):
@@ -105,3 +108,27 @@ def beavertonScrape():
                     writer.writerow([headlineString])
 
 #dailymashScrape(40)
+
+
+def newYTScrape():
+
+    all_headlines = []
+    apikey = "GLCfr8MOODZHWK3UoGDVB1HAXNR1rzPA"
+    query = "politics"
+    begin_date = "20201001"
+    url = f"https://api.nytimes.com/svc/search/v2/articlesearch.json?" \
+        f"q={query}" \
+        f"&api-key={apikey}" \
+        f"&begin_date={begin_date}" \
+
+    r = requests.get(url)
+    for dict in r.json()['response']['docs']:
+        all_headlines.append(dict['headline']['main'])
+
+    return(all_headlines)
+
+
+
+
+
+newYTScrape()
