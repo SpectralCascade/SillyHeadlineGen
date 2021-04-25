@@ -1,5 +1,6 @@
 import nlp
 import soupScraping as scrape
+import csv
 
 # Machine learning class for training basic classification
 class Learner:
@@ -69,16 +70,28 @@ class Learner:
                 bayes[self.dataset["answers"][row]][col][dataset[col][row]] += inc
         #print(bayes)
 
+# TODO: move somewhere else
+profanity = set()
 # Converts headline into machine learning format
 def headlineToTrainingEntry(headline):
-    output = [0, 0] # people, gpe
+    output = [0, 0, 0, 0] # people, gpe, cardinal, profanity
     # Perform NLP on headline
     data = nlp.GetHeadlineNLP().nlp_extract(headline)
+    # These entity counts are very rigid, non useful measures of "parody or not"
+    # While the probabilistic relationship may hold between a particular pair of websites or headline styles,
+    # the whole point of parody headlines is that they have the *form* of real article headlines,
+    # but context and juxtaposition should differentiate them
+    # For instance, the seemingly random use of profanity in a parody headline vs usage in a quote or subject name in a real news headline.
     for ent in data["entities"]:
         if (data["entities"][ent] == "PERSON"):
             output[0] += 1
         elif (data["entities"][ent] == "GPE"):
             output[1] += 1
+        elif (data["entities"][ent] == "CARDINAL"):
+            output[2] += 1
+    for noun in data["nouns"]:
+        if (noun in profanity):
+            output[3] = 1
     # Make sure data is all strings
     for i in range(len(output)):
         output[i] = str(output[i])
@@ -88,19 +101,29 @@ def headlineToTrainingEntry(headline):
 def trainLearner(headlines, parodyOrNot):
     gpe = [];
     people = [];
+    cardinals = []
+    profanities = []
     
     for headline in headlines:
         data = headlineToTrainingEntry(headline);
         people.append(data[0])
         gpe.append(data[1])
+        cardinals.append(data[2])
+        profanities.append(data[3])
     
-    learner = Learner({"data" : [people, gpe], "answers" : parodyOrNot})
+    learner = Learner({"data" : [people, gpe, cardinals, profanities], "answers" : parodyOrNot})
     #learner = Learner({"data" : [people, gpe], "answers" : ["Yes"] * 10 + ["No"] * 10})
     print(learner.dataset)
     learner.train()
     return learner
 
 def demo(headline):
+    # Modified from https://github.com/RobertJGabriel/Google-profanity-words/blob/master/list.txt on 25/04/2021
+    with open('data/profanity.csv', encoding='utf-8') as csv_file:
+        reader = csv.reader(csv_file, delimiter=',')
+        for row in reader:
+            profanity.add(row[0])
+
     scrape_limit = 50
 
     # Scrape a bunch of headlines for the training set
@@ -140,4 +163,4 @@ def demo(headline):
     print("Determined best match to be " + best + " with a score of " + str(best_score))
 
 if (__name__ == "__main__"):
-    demo("Seven countries Britain could invade to cheer itself up")
+    demo("David Cameron: The pigfucker returns")

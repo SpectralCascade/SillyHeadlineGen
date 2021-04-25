@@ -75,13 +75,13 @@ def dailymashScrape(max_headlines):
 
         print("\nPage " + str(i) + "\n")
         with open('dailymashHeadlines.csv', 'a', newline='') as file:
-            writer = csv.writer(file)
+            #writer = csv.writer(file)
             headlines = soup1.find_all('div', {'class': 'holder'})
             for headline in headlines:
                 headlineStripped = headline.find_all('a')
                 for headline2 in headlineStripped:
                     headlineString = headline2.text
-                    writer.writerow([headlineString])
+                    #writer.writerow([headlineString])
                     # test categorisation
                     #print("Headline: " + headlineString + " | Categories: " + str(categoriseArticle(headlineString, "")))
                     num += 1
@@ -135,4 +135,15 @@ def newYTScrape(max_headlines, category = ""):
     
     return all_headlines
 
-#newYTScrape(40)
+if __name__ == "__main__":
+    import nlp
+
+    nyt_headlines = newYTScrape(50)
+    dm_headlines = dailymashScrape(50)
+    print("NYT headlines:")#\n{nyt_headlines}\n\nThe Daily Mash headlines:\n{dm_headlines}")
+    for headline in nyt_headlines:
+        extracted = nlp.GetHeadlineNLP().nlp_extract(headline)
+        print(f"{headline} => {extracted}")
+    for headline in dm_headlines:
+        extracted = nlp.GetHeadlineNLP().nlp_extract(headline)
+        print(f"{headline} => {extracted}")
