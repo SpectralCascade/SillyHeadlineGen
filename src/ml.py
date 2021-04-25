@@ -101,11 +101,14 @@ def trainLearner(headlines, parodyOrNot):
     return learner
 
 def demo(headline):
+    scrape_limit = 50
+
     # Scrape a bunch of headlines for the training set
-    headlines = scrape.dailymashScrape(10)
+    headlines = scrape.dailymashScrape(scrape_limit)
     
     # Some random headlines from the BBC
-    headlines = headlines + ["Greta Thunberg becomes 'bunny hugger' on Twitter",
+    headlines = headlines + scrape.newYTScrape(scrape_limit)
+    '''headlines + ["Greta Thunberg becomes 'bunny hugger' on Twitter",
         "Covid-19: MP claims 'outrage' at dropped charge for 150-guest funeral",
         "Convicted Post Office workers have names cleared",
         "Covid: India on UK travel red list as Covid crisis grows",
@@ -114,14 +117,15 @@ def demo(headline):
         "Brexit: UK-EU talks on Northern Ireland 'to intensify'",
         "US joins race to find stricken Indonesia submarine",
         "Putin opponent Navalny ends hunger strike in Russian jail",
-        "Malaria vaccine hailed as potential breakthrough"]
+        "Malaria vaccine hailed as potential breakthrough"]'''
     
-    print("Headlines: " + str(headlines))
-    
+    #print("Headlines: " + str(headlines))
+    print("Scraped " + str(len(headlines)) + " headlines out of limit " + str(scrape_limit * 2))
+ 
     #headline = "A minuscule jewel-studded thong: five things to buy now the contactless limit is £100"
     to_predict = headlineToTrainingEntry(headline)
     
-    learner = trainLearner(headlines, ["Yes"] * 10 + ["No"] * 10)
+    learner = trainLearner(headlines, ["Parody"] * scrape_limit + ["Not parody"] * scrape_limit)
     
     print("Input data: " + str(to_predict))
     print("Prediction model: " + str(learner.model))
@@ -136,4 +140,4 @@ def demo(headline):
     print("Determined best match to be " + best + " with a score of " + str(best_score))
 
 if (__name__ == "__main__"):
-    demo("A minuscule jewel-studded thong: five things to buy now the contactless limit is £100")
+    demo("Seven countries Britain could invade to cheer itself up")

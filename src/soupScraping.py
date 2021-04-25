@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import csv
 import string
-
+import math
 
 def categoriseArticle(headline, content):
     categories = dict()
@@ -110,25 +110,29 @@ def beavertonScrape():
 #dailymashScrape(40)
 
 
-def newYTScrape():
+def newYTScrape(max_headlines, category = ""):
 
     all_headlines = []
     apikey = "GLCfr8MOODZHWK3UoGDVB1HAXNR1rzPA"
-    query = "politics"
-    begin_date = "20201001"
-    url = f"https://api.nytimes.com/svc/search/v2/articlesearch.json?" \
-        f"q={query}" \
-        f"&api-key={apikey}" \
-        f"&begin_date={begin_date}" \
+    # TODO: convert CV category into valid query term
+    query = category
+    begin_date = "20001001"
+    
+    total_pages = math.ceil(max_headlines / 10)
+    count = 0
+    
+    for p in range(total_pages):
+        url = f"https://api.nytimes.com/svc/search/v2/articlesearch.json?" + (f"q={query}&" if not query else f"") + f"api-key={apikey}&begin_date={begin_date}&page={p}"
+        
+        print ("Querying NYT database with GET request to " + url)
+        r = requests.get(url)
+        for dict in r.json()['response']['docs']:
+            if count < max_headlines:
+                all_headlines.append(dict['headline']['main'])
+            else:
+                break
+            count += 1
+    
+    return all_headlines
 
-    r = requests.get(url)
-    for dict in r.json()['response']['docs']:
-        all_headlines.append(dict['headline']['main'])
-
-    return(all_headlines)
-
-
-
-
-
-newYTScrape()
+#newYTScrape(40)
