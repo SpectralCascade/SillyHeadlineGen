@@ -90,7 +90,7 @@ def headlineToTrainingEntry(headline):
         elif (data["entities"][ent] == "CARDINAL"):
             output[2] += 1
     for noun in data["nouns"]:
-        if (noun in profanity):
+        if (noun.lower() in profanity):
             output[3] = 1
     # Make sure data is all strings
     for i in range(len(output)):
