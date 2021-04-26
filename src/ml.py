@@ -1,6 +1,7 @@
 import nlp
 import soupScraping as scrape
 import csv
+import sys
 
 # Machine learning class for training basic classification
 class Learner:
@@ -19,7 +20,7 @@ class Learner:
         self.dataset = training_dataset
         self.model = dict()
         self.classes = dict()
-    
+
     # Takes a list of data and returns the probabilities for each classification
     def classify(self, data):
         value = dict()
@@ -31,7 +32,7 @@ class Learner:
                 else:
                     value[key] = 0
         return value
-    
+
     # Runs the machine learning logic over the training dataset and builds a probability model.
     # This uses the Naive Bayes algorithm, based on discrete variables (multinomial distribution).
     def train(self):
@@ -87,8 +88,10 @@ def headlineToTrainingEntry(headline):
             output[0] += 1
         elif (data["entities"][ent] == "GPE"):
             output[1] += 1
-        elif (data["entities"][ent] == "CARDINAL"):
-            output[2] += 1
+        #elif (data["entities"][ent] == "CARDINAL"):
+            #output[2] += 1
+    if (len(data["adjectives"])) > 0:
+        output[2] = 1
     for noun in data["nouns"]:
         if (noun.lower() in profanity):
             output[3] = 1
@@ -103,14 +106,14 @@ def trainLearner(headlines, parodyOrNot):
     people = [];
     cardinals = []
     profanities = []
-    
+
     for headline in headlines:
         data = headlineToTrainingEntry(headline);
         people.append(data[0])
         gpe.append(data[1])
         cardinals.append(data[2])
         profanities.append(data[3])
-    
+
     learner = Learner({"data" : [people, gpe, cardinals, profanities], "answers" : parodyOrNot})
     #learner = Learner({"data" : [people, gpe], "answers" : ["Yes"] * 10 + ["No"] * 10})
     print(learner.dataset)
@@ -128,28 +131,19 @@ def demo(headline):
 
     # Scrape a bunch of headlines for the training set
     headlines = scrape.dailymashScrape(scrape_limit)
-    
-    # Some random headlines from the BBC
+    total_parody = len(headlines)
+
     headlines = headlines + scrape.newYTScrape(scrape_limit)
-    '''headlines + ["Greta Thunberg becomes 'bunny hugger' on Twitter",
-        "Covid-19: MP claims 'outrage' at dropped charge for 150-guest funeral",
-        "Convicted Post Office workers have names cleared",
-        "Covid: India on UK travel red list as Covid crisis grows",
-        "UK's coronavirus infection levels continue to fall",
-        "Desperation as Indian hospitals buckle under Covid",
-        "Brexit: UK-EU talks on Northern Ireland 'to intensify'",
-        "US joins race to find stricken Indonesia submarine",
-        "Putin opponent Navalny ends hunger strike in Russian jail",
-        "Malaria vaccine hailed as potential breakthrough"]'''
-    
+    total_real = len(headlines) - total_parody
+
     #print("Headlines: " + str(headlines))
     print("Scraped " + str(len(headlines)) + " headlines out of limit " + str(scrape_limit * 2))
- 
+
     #headline = "A minuscule jewel-studded thong: five things to buy now the contactless limit is £100"
     to_predict = headlineToTrainingEntry(headline)
-    
-    learner = trainLearner(headlines, ["Parody"] * scrape_limit + ["Not parody"] * scrape_limit)
-    
+
+    learner = trainLearner(headlines, ["Not realistic"] * total_parody + ["Realistic"] * total_real)
+
     print("Input data: " + str(to_predict))
     print("Prediction model: " + str(learner.model))
     data = learner.classify(to_predict)
@@ -163,4 +157,7 @@ def demo(headline):
     print("Determined best match to be " + best + " with a score of " + str(best_score))
 
 if (__name__ == "__main__"):
-    demo("David Cameron: The pigfucker returns")
+    if (len(sys.argv) > 1):
+        demo(sys.argv[1])
+    else:
+        demo("'Impossible to know' which senior Royal was worried about how dark baby would be")

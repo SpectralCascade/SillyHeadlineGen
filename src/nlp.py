@@ -14,42 +14,42 @@ def GetHeadlineNLP():
 
 class HeadlineNLP:
     instance = None
-    
+
     # Initialise the singleton instance
     def __init__(self):
         if (HeadlineNLP.instance == None):
             # Kinda-singleton
             HeadlineNLP.instance = self
             print("Initialising HeadlineNLP...")
-            
+
             # Load NLP
             self.nlp = spacy.load("en_core_web_sm")
             # This makes sure entities such as person names are joined together properly
             self.nlp.add_pipe("merge_entities")
-            
+
             # Dictionary of entity types to proper nouns
             # Note, PERSON is not included because the names database is a little more complex
             self.database = {"GPE" : set()}
-            
+
             # Initialise the name database
             self.name_db = NameDatasetV1()
-            
+
             # Setup entity database
             with open('data/world-cities.csv', encoding='utf-8') as csv_file:
                 reader = csv.reader(csv_file, delimiter=',')
                 for row in reader:
                     self.database["GPE"].add(row[0])
-            
+
             if (not os.path.isfile("./all_countries_dict.json")):
                 # Country names database is so big it has to be compressed for git
                 with zipfile.ZipFile('data/all_countries_dict.zip', 'r') as zipObj:
                     zipObj.extractall()
-            
+
             with open('all_countries_dict.json', encoding='utf-8') as json_file:
                 loaded = json.load(json_file)
                 for key in loaded:
                     self.database["GPE"].add(key)
-            
+
             print ("HeadlineNLP initialised!")
 
     # For entities which aren't identified by spaCy, some additional processing is needed.
@@ -72,7 +72,7 @@ class HeadlineNLP:
             print(ent.text + " => " + ent.label_ + " (" + spacy.explain(ent.label_) + ")")
         print("\nTokens:")
         spans = []
-        
+
         for token in doc:
             pos = spacy.explain(token.pos_)
             dep = spacy.explain(token.dep_)
@@ -81,20 +81,23 @@ class HeadlineNLP:
             if (dep == None):
                 dep = "unknown"
             print(token.text + " | " + token.pos_ + " (" + pos + ") | " + token.dep_ + " (" + dep + ")" + " | Head: " + token.head.text + " | Children: \"" + str([t.text for t in token.children]) + "\"")
-    
+
     # Extracts entities and verbs from a headline into a dictionary
     def nlp_extract(self, headline):
         data = dict()
         data["entities"] = dict()
         data["verbs"] = []
         data["nouns"] = []
+        data["adjectives"] = []
         entities = data["entities"]
         verbs = data["verbs"]
         nouns = data["nouns"]
-        
+        adjectives = data["adjectives"]
+
         # Use spaCy to extract entities and verbs
         doc = self.nlp(headline)
         for token in doc:
+            #print(token.text + " => " + token.pos_ + " dep: " + token.dep_)
             # Is this a verb?
             if token.pos_ == "VERB":
                 verbs.append(token.text)
@@ -103,6 +106,8 @@ class HeadlineNLP:
             elif token.pos_ == "PROPN":
                 # Is this a proper noun (if so, it's probably an entity we care about).
                 entities[token.text] = "UNKNOWN"
+            elif token.pos_ == "ADJ":
+                adjectives.append(token.text)
         # Catch any entities that were missed by the proper noun check and assign type label
         for ent in doc.ents:
             entities[ent.text] = ent.label_
@@ -110,13 +115,13 @@ class HeadlineNLP:
         for key in entities:
             if (entities[key] == "UNKNOWN"):
                 entities[key] = self.determine_subject_type(key)
-        
+
         return data
 
 if (__name__ == "__main__"):
     to_analyse = "John Smith: \'I was sacked in Exeter :('"
-    
+
     if (len(sys.argv) > 1):
         to_analyse = sys.argv[1]
-    
+
     print(GetHeadlineNLP().nlp_extract(to_analyse))
