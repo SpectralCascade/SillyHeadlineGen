@@ -146,6 +146,7 @@ def demo(headline):
 
     print("Input data: " + str(to_predict))
     print("Prediction model: " + str(learner.model))
+    predictionModel = learner.model
     data = learner.classify(to_predict)
     best_score = 0
     best = "\"Unknown\""
@@ -155,6 +156,8 @@ def demo(headline):
             best = v
     print(data)
     print("Determined best match to be " + best + " with a score of " + str(best_score))
+
+    return {"Input Headline" : headline, "Prediction Model" : predictionModel, "Outcome Probabilities" : data, "Result" : best}
 
 if (__name__ == "__main__"):
     if (len(sys.argv) > 1):

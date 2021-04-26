@@ -1,5 +1,6 @@
 import json
 import xml.etree.ElementTree as ET 
+import ml
 #Reference: https://docs.python.org/3/library/xml.etree.elementtree.html
 #Accessed 21/04/2021 at 14:45
 
@@ -19,11 +20,15 @@ class mrOutput:
 			json.dump(inputDict, outputFile, indent=4)
 
 	def createXML(inputDict):
-		title = ET.Element(inputDict.get("Title"))
-		identifier1 = ET.SubElement(title, "Tasty : " + inputDict.get("Tasty"))
-		break1 = ET.SubElement(title, "\n")
-		identifier2 = ET.SubElement(title, "Fruity : " + inputDict.get("Fruity"))
-		break2 = ET.SubElement(title, "\n")
+		title = ET.Element(inputDict.get("Output from Execution"))
+		identifier1 = ET.SubElement(title, "Input Headline") 
+		identifier1.text = str(inputDict.get("Input Headline"))
+		identifier2 = ET.SubElement(title, "Prediction Model")
+		identifier2.text = str(inputDict.get("Prediction Model"))
+		identifier3 = ET.SubElement(title, "Outcome Probabilities") 
+		identifier3.text = str(inputDict.get("Outcome Probabilities"))
+		identifier4 = ET.SubElement(title, "Result")
+		identifier4.text = str(inputDict.get("Result"))
 		finalTree = ET.ElementTree(title)
 		with open('outputData.xml', 'w') as outputFile:
 			finalTree.write(outputFile, encoding='unicode')
@@ -32,8 +37,11 @@ class mrOutput:
 	def createXMLInStyle(inputDict):
 		for x in inputDict:
 			title = ET.Element.get(inputDict.get())
+		
 
 	if  __name__ == "__main__":
 		#run the createJSON and createXML method
-		createJSON(exampleDict)
-		createXML(exampleDict)
+		results = ml.demo("poo")
+
+		createXML(results)
+		createJSON(results)
