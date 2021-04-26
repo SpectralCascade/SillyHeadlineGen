@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import csv
 import string
-
+import math
 
 def categoriseArticle(headline, content):
     categories = dict()
@@ -75,13 +75,13 @@ def dailymashScrape(max_headlines):
 
         print("\nPage " + str(i) + "\n")
         with open('dailymashHeadlines.csv', 'a', newline='') as file:
-            writer = csv.writer(file)
+            #writer = csv.writer(file)
             headlines = soup1.find_all('div', {'class': 'holder'})
             for headline in headlines:
                 headlineStripped = headline.find_all('a')
                 for headline2 in headlineStripped:
                     headlineString = headline2.text
-                    writer.writerow([headlineString])
+                    #writer.writerow([headlineString])
                     # test categorisation
                     #print("Headline: " + headlineString + " | Categories: " + str(categoriseArticle(headlineString, "")))
                     num += 1
@@ -110,55 +110,60 @@ def beavertonScrape():
 #dailymashScrape(40)
 
 
-def newYTScrape():
+def newYTScrape(max_headlines, category = ""):
 
     all_headlines = []
-    #categorisedHeadlines = {"Europe": [],
-                            #"Asia": [],
-                            #"Africa": [],
-                            #"North America": [],
-                            #"South America": [],
-                            #"Oceania": [],
-                            #"Entertainment": [],
-                            #"Food": [],
-                            #"Health": [],
-                            #"Sport": [],
-                            #"Politics": []}
-
-    categorisedHeadlines = {"Europe": [],
-                            "Asia": [],
-                            "Africa": [],
-                            "North America": []}
-
-    #categories = {"Europe", "Asia", "Africa", "North America", "South America", "Oceania", "Entertainment", "Food", "Health", "Sport", "Politics"}
-    categories = {"Europe", "Asia", "Africa", "North America"}
     apikey = "GLCfr8MOODZHWK3UoGDVB1HAXNR1rzPA"
-    begin_date = "20210201"
-    for category in categories:
-        #for headline in all_headlines:
-            #print(headline)
-        #input()
-        url = f"https://api.nytimes.com/svc/search/v2/articlesearch.json?" \
-            f"q={category}" \
-            f"&api-key={apikey}" \
-            f"&begin_date={begin_date}" \
+    # TODO: convert CV category into valid query term
+    query = category
+    begin_date = "20001001"
 
+    total_pages = math.ceil(max_headlines / 10)
+    count = 0
+
+    for p in range(total_pages):
+        url = f"https://api.nytimes.com/svc/search/v2/articlesearch.json?" + (f"q={query}&" if not query else f"") + f"api-key={apikey}&begin_date={begin_date}&page={p}"
+
+        print ("Querying NYT database with GET request to " + url)
         r = requests.get(url)
-        #print(r.json())
         for dict in r.json()['response']['docs']:
-            categorisedHeadlines[category].append([dict['headline']['main']])
-            all_headlines.append(dict['headline']['main'])
+            if count < max_headlines:
+                all_headlines.append(dict['headline']['main'])
+            else:
+                break
+            count += 1
 
-    #for headline in categorisedHeadlines:
-        #print(headline[0])
-    print(categorisedHeadlines["Europe"])
-    print(categorisedHeadlines["Asia"])
-    print(categorisedHeadlines["Africa"])
-    print(categorisedHeadlines["North America"])
-    return(all_headlines)
+    return all_headlines
 
 
+def guardianScrape(max_headlines, category=""):
+    all_headlines = []
+    apikey = "01dfb74a-30e0-468a-a59e-040459e67a38"
+    query = category
+    begin_date = "2000-10-01"
+    total_pages = math.ceil(max_headlines / 10)
+    count = 0
+    for p in range(total_pages):
+        url = f"https://content.guardianapis.com/search?" + f"api-key={apikey}" + f"&query-fields=headline&from-date={begin_date}" + (f"&q={query}" if not query else f"") + f"&page={p+1}"
+        print("Querying The Guardian database with GET request to " + url)
+        r = requests.get(url)
+        for dict in r.json()['response']['results']:
+            if count < max_headlines:
+                all_headlines.append(dict['webTitle'])
+            else:
+                break
+            count += 1
 
 
+if __name__ == "__main__":
+    import nlp
 
-newYTScrape()
+    nyt_headlines = newYTScrape(50)
+    dm_headlines = dailymashScrape(50)
+    print("NYT headlines:")#\n{nyt_headlines}\n\nThe Daily Mash headlines:\n{dm_headlines}")
+    for headline in nyt_headlines:
+        extracted = nlp.GetHeadlineNLP().nlp_extract(headline)
+        print(f"{headline} => {extracted}")
+    for headline in dm_headlines:
+        extracted = nlp.GetHeadlineNLP().nlp_extract(headline)
+        print(f"{headline} => {extracted}")
