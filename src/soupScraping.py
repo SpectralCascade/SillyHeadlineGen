@@ -113,18 +113,48 @@ def beavertonScrape():
 def newYTScrape():
 
     all_headlines = []
+    #categorisedHeadlines = {"Europe": [],
+                            #"Asia": [],
+                            #"Africa": [],
+                            #"North America": [],
+                            #"South America": [],
+                            #"Oceania": [],
+                            #"Entertainment": [],
+                            #"Food": [],
+                            #"Health": [],
+                            #"Sport": [],
+                            #"Politics": []}
+
+    categorisedHeadlines = {"Europe": [],
+                            "Asia": [],
+                            "Africa": [],
+                            "North America": []}
+
+    #categories = {"Europe", "Asia", "Africa", "North America", "South America", "Oceania", "Entertainment", "Food", "Health", "Sport", "Politics"}
+    categories = {"Europe", "Asia", "Africa", "North America"}
     apikey = "GLCfr8MOODZHWK3UoGDVB1HAXNR1rzPA"
-    query = "politics"
-    begin_date = "20201001"
-    url = f"https://api.nytimes.com/svc/search/v2/articlesearch.json?" \
-        f"q={query}" \
-        f"&api-key={apikey}" \
-        f"&begin_date={begin_date}" \
+    begin_date = "20210201"
+    for category in categories:
+        #for headline in all_headlines:
+            #print(headline)
+        #input()
+        url = f"https://api.nytimes.com/svc/search/v2/articlesearch.json?" \
+            f"q={category}" \
+            f"&api-key={apikey}" \
+            f"&begin_date={begin_date}" \
 
-    r = requests.get(url)
-    for dict in r.json()['response']['docs']:
-        all_headlines.append(dict['headline']['main'])
+        r = requests.get(url)
+        #print(r.json())
+        for dict in r.json()['response']['docs']:
+            categorisedHeadlines[category].append([dict['headline']['main']])
+            all_headlines.append(dict['headline']['main'])
 
+    #for headline in categorisedHeadlines:
+        #print(headline[0])
+    print(categorisedHeadlines["Europe"])
+    print(categorisedHeadlines["Asia"])
+    print(categorisedHeadlines["Africa"])
+    print(categorisedHeadlines["North America"])
     return(all_headlines)
 
 
