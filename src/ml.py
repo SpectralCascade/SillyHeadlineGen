@@ -20,7 +20,7 @@ class Learner:
         self.dataset = training_dataset
         self.model = dict()
         self.classes = dict()
-    
+
     # Takes a list of data and returns the probabilities for each classification
     def classify(self, data):
         value = dict()
@@ -32,7 +32,7 @@ class Learner:
                 else:
                     value[key] = 0
         return value
-    
+
     # Runs the machine learning logic over the training dataset and builds a probability model.
     # This uses the Naive Bayes algorithm, based on discrete variables (multinomial distribution).
     def train(self):
@@ -106,14 +106,14 @@ def trainLearner(headlines, parodyOrNot):
     people = [];
     cardinals = []
     profanities = []
-    
+
     for headline in headlines:
         data = headlineToTrainingEntry(headline);
         people.append(data[0])
         gpe.append(data[1])
         cardinals.append(data[2])
         profanities.append(data[3])
-    
+
     learner = Learner({"data" : [people, gpe, cardinals, profanities], "answers" : parodyOrNot})
     #learner = Learner({"data" : [people, gpe], "answers" : ["Yes"] * 10 + ["No"] * 10})
     print(learner.dataset)
@@ -132,18 +132,18 @@ def demo(headline):
     # Scrape a bunch of headlines for the training set
     headlines = scrape.dailymashScrape(scrape_limit)
     total_parody = len(headlines)
-    
+
     headlines = headlines + scrape.newYTScrape(scrape_limit)
     total_real = len(headlines) - total_parody
-    
+
     #print("Headlines: " + str(headlines))
     print("Scraped " + str(len(headlines)) + " headlines out of limit " + str(scrape_limit * 2))
- 
+
     #headline = "A minuscule jewel-studded thong: five things to buy now the contactless limit is £100"
     to_predict = headlineToTrainingEntry(headline)
-    
+
     learner = trainLearner(headlines, ["Not realistic"] * total_parody + ["Realistic"] * total_real)
-    
+
     print("Input data: " + str(to_predict))
     print("Prediction model: " + str(learner.model))
     data = learner.classify(to_predict)

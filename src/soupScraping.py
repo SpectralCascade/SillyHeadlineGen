@@ -117,13 +117,13 @@ def newYTScrape(max_headlines, category = ""):
     # TODO: convert CV category into valid query term
     query = category
     begin_date = "20001001"
-    
+
     total_pages = math.ceil(max_headlines / 10)
     count = 0
-    
+
     for p in range(total_pages):
         url = f"https://api.nytimes.com/svc/search/v2/articlesearch.json?" + (f"q={query}&" if not query else f"") + f"api-key={apikey}&begin_date={begin_date}&page={p}"
-        
+
         print ("Querying NYT database with GET request to " + url)
         r = requests.get(url)
         while ('response' not in r.json()):
@@ -134,8 +134,30 @@ def newYTScrape(max_headlines, category = ""):
             else:
                 break
             count += 1
-    
+
     return all_headlines
+
+
+def guardianScrape(max_headlines, category=""):
+    all_headlines = []
+    apikey = "01dfb74a-30e0-468a-a59e-040459e67a38"
+    query = category
+    begin_date = "2000-10-01"
+    total_pages = math.ceil(max_headlines / 10)
+    count = 0
+    for p in range(total_pages):
+        url = f"https://content.guardianapis.com/search?" + f"api-key={apikey}" + f"&query-fields=headline&from-date={begin_date}" + (f"&q={query}" if not query else f"") + f"&page={p+1}"
+        print("Querying The Guardian database with GET request to " + url)
+        r = requests.get(url)
+        for dict in r.json()['response']['results']:
+            if count < max_headlines:
+                all_headlines.append(dict['webTitle'])
+            else:
+                break
+            count += 1
+
+    return all_headlines
+
 
 if __name__ == "__main__":
     import nlp
