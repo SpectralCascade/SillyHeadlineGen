@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import csv
 import string
 import math
+import sys
 
 def categoriseArticle(headline, content):
     categories = dict()
@@ -149,12 +150,13 @@ def guardianScrape(max_headlines, category=""):
         url = f"https://content.guardianapis.com/search?" + f"api-key={apikey}" + f"&query-fields=headline&from-date={begin_date}" + (f"&q={query}" if not query else f"") + f"&page={p+1}"
         print("Querying The Guardian database with GET request to " + url)
         r = requests.get(url)
-        for dict in r.json()['response']['results']:
-            if count < max_headlines:
-                all_headlines.append(dict['webTitle'])
-            else:
-                break
-            count += 1
+        if 'response' in r.json():
+            for dict in r.json()['response']['results']:
+                if count < max_headlines:
+                    all_headlines.append(dict['webTitle'])
+                else:
+                    break
+                count += 1
 
     return all_headlines
 
@@ -162,12 +164,16 @@ def guardianScrape(max_headlines, category=""):
 if __name__ == "__main__":
     import nlp
 
-    nyt_headlines = newYTScrape(50)
-    dm_headlines = dailymashScrape(50)
-    print("NYT headlines:")#\n{nyt_headlines}\n\nThe Daily Mash headlines:\n{dm_headlines}")
-    for headline in nyt_headlines:
-        extracted = nlp.GetHeadlineNLP().nlp_extract(headline)
-        print(f"{headline} => {extracted}")
-    for headline in dm_headlines:
-        extracted = nlp.GetHeadlineNLP().nlp_extract(headline)
-        print(f"{headline} => {extracted}")
+    max_scrape = 10000
+    adjectives = set()
+    with open("data/exclusive_real_adjectives.csv", "w", newline='', encoding='utf-8') as csvfile:
+        g_headlines = guardianScrape(max_scrape)
+        writer = csv.writer(csvfile, delimiter=',')
+        for headline in g_headlines:
+            extracted = nlp.GetHeadlineNLP().nlp_extract(headline)
+            for adj in extracted["adjectives"]:
+                print (adj)
+                if adj not in adjectives:
+                    adjectives.add(adj)
+                    writer.writerow([adj])
+    print("Finished output in data/exclusive_real_adjectives.csv")
