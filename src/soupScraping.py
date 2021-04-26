@@ -172,7 +172,7 @@ if __name__ == "__main__":
         for headline in g_headlines:
             extracted = nlp.GetHeadlineNLP().nlp_extract(headline)
             for adj in extracted["adjectives"]:
-                print (adj)
+                #print (adj)
                 if adj not in adjectives:
                     adjectives.add(adj)
                     writer.writerow([adj])
