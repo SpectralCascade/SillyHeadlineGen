@@ -126,6 +126,8 @@ def newYTScrape(max_headlines, category = ""):
         
         print ("Querying NYT database with GET request to " + url)
         r = requests.get(url)
+        while ('response' not in r.json()):
+            r = requests.get(url)
         for dict in r.json()['response']['docs']:
             if count < max_headlines:
                 all_headlines.append(dict['headline']['main'])

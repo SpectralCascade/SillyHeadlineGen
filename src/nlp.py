@@ -88,13 +88,16 @@ class HeadlineNLP:
         data["entities"] = dict()
         data["verbs"] = []
         data["nouns"] = []
+        data["adjectives"] = []
         entities = data["entities"]
         verbs = data["verbs"]
         nouns = data["nouns"]
+        adjectives = data["adjectives"]
         
         # Use spaCy to extract entities and verbs
         doc = self.nlp(headline)
         for token in doc:
+            #print(token.text + " => " + token.pos_ + " dep: " + token.dep_)
             # Is this a verb?
             if token.pos_ == "VERB":
                 verbs.append(token.text)
@@ -103,6 +106,8 @@ class HeadlineNLP:
             elif token.pos_ == "PROPN":
                 # Is this a proper noun (if so, it's probably an entity we care about).
                 entities[token.text] = "UNKNOWN"
+            elif token.pos_ == "ADJ":
+                adjectives.append(token.text)
         # Catch any entities that were missed by the proper noun check and assign type label
         for ent in doc.ents:
             entities[ent.text] = ent.label_
