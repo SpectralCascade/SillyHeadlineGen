@@ -91,7 +91,7 @@ def headlineToTrainingEntry(headline):
     # Sentiment analysis
     sentiment = textblob.TextBlob(headline).sentiment
     output[0] = int(round(sentiment.polarity))
-    output[1] = int(round(sentiment.subjectivity * 4))
+    output[1] = int(round(sentiment.subjectivity))
     
     # These entity counts are very rigid, non useful measures of "parody or not"
     # While the probabilistic relationship may hold between a particular pair of websites or headline styles,
@@ -167,6 +167,7 @@ def demo(headline):
     to_predict = headlineToTrainingEntry(headline)
     
     learner = trainLearner(headlines, [is_parody] * total_parody + [not_parody] * total_real)
+    #print(learner.dataset)
     
     print("Input data: " + str(to_predict))
     print("Prediction model: " + str(learner.model))

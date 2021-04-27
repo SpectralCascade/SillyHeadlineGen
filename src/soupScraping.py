@@ -172,19 +172,19 @@ def guardianScrape(max_headlines, category=""):
     total_pages = math.ceil(max_headlines / 10)
     count = 0
     for p in range(total_pages):
-        url = f"https://content.guardianapis.com/search?" + f"api-key={apikey}" + f"&query-fields=headline&from-date={begin_date}" + (f"q={category}" if not query else f"") + f"&page={p+1}"
+        url = f"https://content.guardianapis.com/search?" + f"api-key={apikey}" + f"&query-fields=headline&from-date={begin_date}" + (f"&q={query}" if query else f"") + f"&page={p+1}"
         print("Querying The Guardian database with GET request to " + url)
         r = requests.get(url)
         #print(r.json())
-        if 'response' in r.json() and 'results' in r.json()['response']:
+        #print(r)
+        if 'response' in r.json():
             for dict in r.json()['response']['results']:
                 if count < (max_headlines):
-                    categorisedHeadlines[category].append(dict['webTitle'].split('|', 1)[0])
                     all_headlines.append(dict['webTitle'].split('|', 1)[0])
                     count += 1
                 else:
                     break
-
+    #print(all_headlines)
     return all_headlines
 
 if __name__ == "__main__":
