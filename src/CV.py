@@ -8,5 +8,3 @@
 CV = { "Region" : [ "Europe","Asia","Africa","North America","South America","Oceania"],
       "Subject" : ["Event","Person","Place"] ,
        "Culture" : ["Entertainment", "Science", "Health", "Sport","Politics"]}
-
-print(CV)

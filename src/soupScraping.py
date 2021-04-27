@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+from CV import CV
 import csv
 import string
 import math
@@ -152,10 +153,21 @@ def newYTScrape(max_headlines, category = ""):
 
     return all_headlines
 
-def guardianScrape(max_headlines, category=""):
+
+def guardianScrape(max_headlines, category=[]):
     all_headlines = []
     apikey = "01dfb74a-30e0-468a-a59e-040459e67a38"
-    query = category
+    query = ""
+    print(CV.values())
+    print(category)
+    schemaDict = {"@context": ["schema.org"],
+                  "@type": ["NewsArticle"],
+                  "headline": [],
+                  "author": [],
+                  "datePublished": [],
+                  "description": [],
+                  "publisher": {"@type": ["Organization"], "name": ["The Guardian"]}
+                  }
     categorisedHeadlines = {"Europe": [],
                             "Asia": [],
                             "Africa": [],
@@ -163,16 +175,21 @@ def guardianScrape(max_headlines, category=""):
                             "South America": [],
                             "Oceania": [],
                             "Entertainment": [],
-                            "Food": [],
+                            "Science": [],
                             "Health": [],
                             "Sport": [],
                             "Politics": []}
-    categories = {"Europe", "Asia", "Africa", "North America", "South America", "Oceania", "Entertainment", "Food", "Health", "Sport", "Politics"}
+
+    for cat in category:
+        for key in CV:
+            if cat in CV[key]:
+                query = query + (f"{cat}%20")
+
     begin_date = "2000-10-01"
     total_pages = math.ceil(max_headlines / 10)
     count = 0
     for p in range(total_pages):
-        url = f"https://content.guardianapis.com/search?" + f"api-key={apikey}" + f"&query-fields=headline&from-date={begin_date}" + (f"&q={query}" if query else f"") + f"&page={p+1}"
+        url = f"https://content.guardianapis.com/search?" + f"api-key={apikey}" + f"&query-fields=headline&show-tags=contributor&from-date={begin_date}" + (f"&q={query}" if query else f"") + f"&page={p+1}"
         print("Querying The Guardian database with GET request to " + url)
         r = requests.get(url)
         #print(r.json())
@@ -180,26 +197,37 @@ def guardianScrape(max_headlines, category=""):
         if 'response' in r.json():
             for dict in r.json()['response']['results']:
                 if count < (max_headlines):
+                    schemaDict["headline"].append(dict['webTitle'].split('|', 1)[0])
+                    for id in dict["tags"]:
+                        schemaDict["author"].append(id['webTitle'])
+                    schemaDict["datePublished"].append(dict['webPublicationDate'])
+                    for key in categorisedHeadlines:
+                        if key in category:
+                            categorisedHeadlines[key].append(dict['webTitle'].split('|', 1)[0])
                     all_headlines.append(dict['webTitle'].split('|', 1)[0])
                     count += 1
                 else:
                     break
-    #print(all_headlines)
+
     return all_headlines
 
-if __name__ == "__main__":
-   import nlp
 
-   max_scrape = 10000
-   adjectives = set()
-   with open("data/exclusive_real_adjectives.csv", "w", newline='', encoding='utf-8') as csvfile:
-       g_headlines = guardianScrape(max_scrape)
-       writer = csv.writer(csvfile, delimiter=',')
-       for headline in g_headlines:
-           extracted = nlp.GetHeadlineNLP().nlp_extract(headline)
-           for adj in extracted["adjectives"]:
-               #print (adj)
-               if adj not in adjectives:
-                   adjectives.add(adj)
-                   writer.writerow([adj])
-   print("Finished output in data/exclusive_real_adjectives.csv")
+print(guardianScrape(10, ["Europe", "North America", "Science", "Asia"]))
+#queryfieldTest()
+
+# if __name__ == "__main__":
+#    import nlp
+#
+#    max_scrape = 10000
+#    adjectives = set()
+#    with open("data/exclusive_real_adjectives.csv", "w", newline='', encoding='utf-8') as csvfile:
+#        g_headlines = guardianScrape(max_scrape)
+#        writer = csv.writer(csvfile, delimiter=',')
+#        for headline in g_headlines:
+#            extracted = nlp.GetHeadlineNLP().nlp_extract(headline)
+#            for adj in extracted["adjectives"]:
+#                #print (adj)
+#                if adj not in adjectives:
+#                    adjectives.add(adj)
+#                    writer.writerow([adj])
+#    print("Finished output in data/exclusive_real_adjectives.csv")
