@@ -84,14 +84,7 @@ def dailymashScrape(max_headlines, category=""):
                             "Health": [],
                             "Sport": [],
                             "Politics": []}
-    schemaDict = {"@context": ["schema.org"],
-                  "@type": ["NewsArticle"],
-                  "headline": [],
-                  "author": ["thedailymash"],
-                  "datePublished": [],
-                  "description": [],
-                  "publisher": {"@type": ["Organization"], "name": ["Digitalbox"]}
-                  }
+    schemaList = []
     for key in CV:
         if category in CV[key]:
             trueCategory = category
@@ -112,6 +105,14 @@ def dailymashScrape(max_headlines, category=""):
         print("Scraping The Daily Mash with GET request to " + url)
         headlines = soup1.find_all('div', {'class': 'holder'})
         for headline in headlines:
+            schemaDict = {"@context": ["schema.org"],
+                          "@type": ["NewsArticle"],
+                          "headline": [],
+                          "author": ["thedailymash"],
+                          "datePublished": [],
+                          "description": [],
+                          "publisher": {"@type": ["Organization"], "name": ["Digitalbox"]}
+                          }
             headlineStripped = headline.find_all('a')
             for headline2 in headlineStripped:
                 newPage = requests.get(headline2['href'])
@@ -124,17 +125,16 @@ def dailymashScrape(max_headlines, category=""):
                 #print("Headline: " + headlineString + " | Categories: " + str(categoriseArticle(headlineString, "")))
                 num += 1
                 schemaDict["headline"].append(headlineString)
+                schemaList.append(schemaDict)
                 if (trueCategory != ""):
                     categorisedHeadlines[trueCategory].append(headlineString)
                 all_headlines.append(headlineString)
                 if (num >= max_headlines):
-                    #for key, value in schemaDict.items():
-                    #    print(key, ' : ', value)
                     return {"headlines": all_headlines, "schema": schemaDict, "categorised": []}
 
     #for key, value in schemaDict.items():
         #print(key, ' : ', value)
-    return {"headlines": all_headlines, "schema": schemaDict, "categorised": []}
+    return {"headlines": all_headlines, "schema": schemaList, "categorised": []}
 
 
 def beavertonScrape():
@@ -203,14 +203,7 @@ def guardianScrape(max_headlines, category=[]):
     query = ""
     #print(CV.values())
     #print(category)
-    schemaDict = {"@context": ["schema.org"],
-                  "@type": ["NewsArticle"],
-                  "headline": [],
-                  "author": [],
-                  "datePublished": [],
-                  "description": [],
-                  "publisher": {"@type": ["Organization"], "name": ["The Guardian"]}
-                  }
+    schemaList = []
     categorisedHeadlines = {"Europe": [],
                             "Asia": [],
                             "Africa": [],
@@ -239,6 +232,14 @@ def guardianScrape(max_headlines, category=[]):
         #print(r)
         if 'response' in r.json():
             for dict in r.json()['response']['results']:
+                schemaDict = {"@context": ["schema.org"],
+                              "@type": ["NewsArticle"],
+                              "headline": [],
+                              "author": [],
+                              "datePublished": [],
+                              "description": [],
+                              "publisher": {"@type": ["Organization"], "name": ["The Guardian"]}
+                              }
                 if count < (max_headlines):
                     schemaDict["headline"].append(dict['webTitle'].split('|', 1)[0])
                     for id in dict["tags"]:
@@ -249,9 +250,10 @@ def guardianScrape(max_headlines, category=[]):
                             categorisedHeadlines[key].append(dict['webTitle'].split('|', 1)[0])
                     all_headlines.append(dict['webTitle'].split('|', 1)[0])
                     count += 1
+                    schemaList.append(schemaDict)
                 else:
                     break
-    return {"headlines": all_headlines, "schema": schemaDict, "categorised": categorisedHeadlines}
+    return {"headlines": all_headlines, "schema": schemaList, "categorised": categorisedHeadlines}
 
 
 #print(guardianScrape(10, ["Europe", "North America", "Science", "Asia"]))
