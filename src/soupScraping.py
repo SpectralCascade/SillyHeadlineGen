@@ -242,6 +242,17 @@ def guardianScrape(max_headlines, category=[]):
     begin_date = "2000-10-01"
     total_pages = math.ceil(max_headlines / 10)
     count = 0
+    schemaDict = {
+        "@context": "schema.org",
+        "@type": "NewsArticle",
+        "headline": "",
+        "author": "",
+        "datePublished": "",
+        "description": "",
+        "publisher": {"@type": "Organization", "name": "The Guardian"}
+    }
+    
+    
     for p in range(total_pages):
         url = f"https://content.guardianapis.com/search?" + f"api-key={apikey}" + f"&query-fields=headline&show-tags=contributor&from-date={begin_date}" + (f"&q={query}" if query else f"") + f"&page={p+1}"
         print("Querying The Guardian database with GET request to " + url)
@@ -249,33 +260,31 @@ def guardianScrape(max_headlines, category=[]):
         #print(r.json())
         #print(r)
         if 'response' in r.json():
-            for dict in r.json()['response']['results']:
-                schemaDict = {"@context": ["schema.org"],
-                              "@type": ["NewsArticle"],
-                              "headline": [],
-                              "author": [],
-                              "datePublished": [],
-                              "description": [],
-                              "publisher": {"@type": ["Organization"], "name": ["The Guardian"]}
-                              }
+            for data in r.json()['response']['results']:
+                
                 if count < (max_headlines):
-                    schemaDict["headline"].append(dict['webTitle'].split('|', 1)[0])
-                    for id in dict["tags"]:
-                        schemaDict["author"].append(id['webTitle'])
-                    schemaDict["datePublished"].append(dict['webPublicationDate'])
+                    to_add = dict(schemaDict)
+                    to_add["headline"] = data['webTitle'].split('|', 1)[0]
+                    for id in data["tags"]:
+                        if not to_add["author"]:
+                            to_add["author"] = id['webTitle']
+                        else:
+                            to_add["author"] += ", " + id['webTitle']
+                    to_add["datePublished"] = data['webPublicationDate']
                     for key in categorisedHeadlines:
                         if key in category:
-                            categorisedHeadlines[key].append(dict['webTitle'].split('|', 1)[0])
-                    all_headlines.append(dict['webTitle'].split('|', 1)[0])
+                            categorisedHeadlines[key].append(data['webTitle'].split('|', 1)[0])
+                    all_headlines.append(data['webTitle'].split('|', 1)[0])
                     count += 1
-                    schemaList.append(schemaDict)
+                    schemaList.append(to_add)
                 else:
                     break
+    print(schemaList)
     return {"headlines": all_headlines, "schema": schemaList, "categorised": categorisedHeadlines}
 
 
 #guardianScrape(5)
-dailymashScrape(5)
+#dailymashScrape(5)
 
 # if __name__ == "__main__":
 #    import nlp
