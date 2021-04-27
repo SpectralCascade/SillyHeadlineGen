@@ -76,22 +76,16 @@ def dailymashScrape(max_headlines):
         soup1 = BeautifulSoup(page.content, 'html.parser')
 
         print("\nPage " + str(i) + "\n")
-<<<<<<< HEAD
-=======
         #with open('dailymashHeadlines.csv', 'a', newline='') as file:
         #writer = csv.writer(file)
->>>>>>> bc3f0830c8b2b607aaa6402e12a51ca9be78df78
         headlines = soup1.find_all('div', {'class': 'holder'})
         for headline in headlines:
             headlineStripped = headline.find_all('a')
             for headline2 in headlineStripped:
                 headlineString = headline2.text
-<<<<<<< HEAD
-=======
                 #writer.writerow([headlineString])
                 # test categorisation
                 #print("Headline: " + headlineString + " | Categories: " + str(categoriseArticle(headlineString, "")))
->>>>>>> bc3f0830c8b2b607aaa6402e12a51ca9be78df78
                 num += 1
                 all_headlines.append(headlineString)
                 if (num >= max_headlines):
@@ -158,7 +152,6 @@ def newYTScrape(max_headlines, category = ""):
 
     return all_headlines
 
-
 def guardianScrape(max_headlines, category=""):
     all_headlines = []
     apikey = "01dfb74a-30e0-468a-a59e-040459e67a38"
@@ -178,24 +171,21 @@ def guardianScrape(max_headlines, category=""):
     begin_date = "2000-10-01"
     total_pages = math.ceil(max_headlines / 10)
     count = 0
-    for category in categories:
-        headlineAdded = False
-        for p in range(total_pages):
-            url = f"https://content.guardianapis.com/search?" + f"api-key={apikey}" + f"&query-fields=headline&from-date={begin_date}" + (f"&q={category}") + f"&page={p+1}"
-            print("Querying The Guardian database with GET request to " + url)
-            r = requests.get(url)
-            print(r.json())
-            if 'response' in r.json():
-                for dict in r.json()['response']['results']:
+    for p in range(total_pages):
+        url = f"https://content.guardianapis.com/search?" + f"api-key={apikey}" + f"&query-fields=headline&from-date={begin_date}" + (f"q={category}" if not query else f"") + f"&page={p+1}"
+        print("Querying The Guardian database with GET request to " + url)
+        r = requests.get(url)
+        #print(r.json())
+        if 'response' in r.json() and 'results' in r.json()['response']:
+            for dict in r.json()['response']['results']:
+                if count < (max_headlines):
                     categorisedHeadlines[category].append(dict['webTitle'].split('|', 1)[0])
-                    if count < (max_headlines) and (headlineAdded is False):
-                        all_headlines.append(dict['webTitle'].split('|', 1)[0])
-                        headlineAdded = True
-                        count += 1
+                    all_headlines.append(dict['webTitle'].split('|', 1)[0])
+                    count += 1
+                else:
+                    break
 
     return all_headlines
-
-<<<<<<< HEAD
 
 if __name__ == "__main__":
    import nlp
@@ -213,21 +203,3 @@ if __name__ == "__main__":
                    adjectives.add(adj)
                    writer.writerow([adj])
    print("Finished output in data/exclusive_real_adjectives.csv")
-=======
-if __name__ == "__main__":
-    import nlp
-
-    max_scrape = 10000
-    adjectives = set()
-    with open("data/exclusive_real_adjectives.csv", "w", newline='', encoding='utf-8') as csvfile:
-        g_headlines = guardianScrape(max_scrape)
-        writer = csv.writer(csvfile, delimiter=',')
-        for headline in g_headlines:
-            extracted = nlp.GetHeadlineNLP().nlp_extract(headline)
-            for adj in extracted["adjectives"]:
-                #print (adj)
-                if adj not in adjectives:
-                    adjectives.add(adj)
-                    writer.writerow([adj])
-    print("Finished output in data/exclusive_real_adjectives.csv")
->>>>>>> bc3f0830c8b2b607aaa6402e12a51ca9be78df78
