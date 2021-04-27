@@ -120,20 +120,19 @@ def headlineToTrainingEntry(headline):
 # Takes list of headlines and list of yes/no parody or not, returns trained learner
 def trainLearner(headlines, parodyOrNot):
     sentiment = []
-    gpe = []
+    subjectivity = []
     adjectives = []
     profanities = []
 
     for i in range(len(headlines)):
         data = headlineToTrainingEntry(headlines[i])
         sentiment.append(data[0])
-        gpe.append(data[1])
+        subjectivity.append(data[1])
         adjectives.append(data[2])
         profanities.append(data[3])
     
-    learner = Learner({"data" : [sentiment, gpe, adjectives, profanities], "answers" : parodyOrNot})
-    #learner = Learner({"data" : [people, gpe], "answers" : ["Yes"] * 10 + ["No"] * 10})
-    print(learner.dataset)
+    learner = Learner({"data" : [sentiment, subjectivity, adjectives, profanities], "answers" : parodyOrNot})
+    #print(learner.dataset)
     learner.train()
     return learner
 
