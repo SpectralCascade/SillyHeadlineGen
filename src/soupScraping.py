@@ -4,6 +4,7 @@ import csv
 import string
 import math
 
+
 def categoriseArticle(headline, content):
     categories = dict()
     cv_map = dict()
@@ -113,27 +114,40 @@ def beavertonScrape():
 def newYTScrape(max_headlines, category = ""):
 
     all_headlines = []
+    categorisedHeadlines = {"Europe": [],
+                            "Asia": [],
+                            "Africa": [],
+                            "North America": [],
+                            "South America": [],
+                            "Oceania": [],
+                            "Entertainment": [],
+                            "Food": [],
+                            "Health": [],
+                            "Sport": [],
+                            "Politics": []}
     apikey = "GLCfr8MOODZHWK3UoGDVB1HAXNR1rzPA"
     # TODO: convert CV category into valid query term
+    categories = {"Europe", "Asia", "Africa", "North America", "South America", "Oceania", "Entertainment", "Food", "Health", "Sport", "Politics"}
     query = category
     begin_date = "20001001"
 
     total_pages = math.ceil(max_headlines / 10)
     count = 0
+    for category in categories:
+        for p in range(total_pages):
+            url = f"https://api.nytimes.com/svc/search/v2/articlesearch.json?" + (f"q={category}&" if not query else f"") + f"api-key={apikey}&begin_date={begin_date}&page={p}"
 
-    for p in range(total_pages):
-        url = f"https://api.nytimes.com/svc/search/v2/articlesearch.json?" + (f"q={query}&" if not query else f"") + f"api-key={apikey}&begin_date={begin_date}&page={p}"
-
-        print ("Querying NYT database with GET request to " + url)
-        r = requests.get(url)
-        while ('response' not in r.json()):
+            print ("Querying NYT database with GET request to " + url)
             r = requests.get(url)
-        for dict in r.json()['response']['docs']:
-            if count < max_headlines:
-                all_headlines.append(dict['headline']['main'])
-            else:
-                break
-            count += 1
+            while ('response' not in r.json()):
+                r = requests.get(url)
+            for dict in r.json()['response']['docs']:
+                categorisedHeadlines[category].append([dict['headline']['main']])
+                if count < (max_headlines*11):
+                    all_headlines.append(dict['headline']['main'])
+                else:
+                    break
+                count += 1
 
     return all_headlines
 
@@ -159,15 +173,17 @@ def guardianScrape(max_headlines, category=""):
     return all_headlines
 
 
-if __name__ == "__main__":
-    import nlp
+newYTScrape(10)
 
-    nyt_headlines = newYTScrape(50)
-    dm_headlines = dailymashScrape(50)
-    print("NYT headlines:")#\n{nyt_headlines}\n\nThe Daily Mash headlines:\n{dm_headlines}")
-    for headline in nyt_headlines:
-        extracted = nlp.GetHeadlineNLP().nlp_extract(headline)
-        print(f"{headline} => {extracted}")
-    for headline in dm_headlines:
-        extracted = nlp.GetHeadlineNLP().nlp_extract(headline)
-        print(f"{headline} => {extracted}")
+# if __name__ == "__main__":
+#     import nlp
+#
+#     nyt_headlines = newYTScrape(50)
+#     dm_headlines = dailymashScrape(50)
+#     print("NYT headlines:")#\n{nyt_headlines}\n\nThe Daily Mash headlines:\n{dm_headlines}")
+#     for headline in nyt_headlines:
+#         extracted = nlp.GetHeadlineNLP().nlp_extract(headline)
+#         print(f"{headline} => {extracted}")
+#     for headline in dm_headlines:
+#         extracted = nlp.GetHeadlineNLP().nlp_extract(headline)
+#         print(f"{headline} => {extracted}")
