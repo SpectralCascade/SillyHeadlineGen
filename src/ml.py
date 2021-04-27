@@ -91,7 +91,7 @@ def headlineToTrainingEntry(headline):
     # Sentiment analysis
     sentiment = textblob.TextBlob(headline).sentiment
     output[0] = int(round(sentiment.polarity))
-    output[1] = int(round(sentiment.subjectivity))
+    output[1] = int(round(sentiment.subjectivity * 4))
     
     # These entity counts are very rigid, non useful measures of "parody or not"
     # While the probabilistic relationship may hold between a particular pair of websites or headline styles,
