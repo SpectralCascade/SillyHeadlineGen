@@ -3,6 +3,7 @@ from CV import CV
 import urllib.request
 import userConsole as uc
 import ml
+import mrOutput
 
 if __name__ == '__main__':
     args = sys.argv[1:]		# extracting arguments from the command line
@@ -76,4 +77,4 @@ if __name__ == '__main__':
         results = ml.demo(headlines, filterTerms)
         for result in results:
             # Send to machine readable output
-            pass
+            mrOutput.exportchoice(output, result)

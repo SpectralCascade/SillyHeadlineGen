@@ -23,16 +23,16 @@
         ],
         "Realistic": [
             {
-                "0": 0.4800000000000003,
-                "1": 0.02
+                "0": 0.4850000000000003,
+                "1": 0.015
             },
             {
-                "0": 0.4350000000000003,
-                "1": 0.06499999999999999
+                "1": 0.075,
+                "0": 0.42500000000000027
             },
             {
-                "1": 0.085,
-                "0": 0.41500000000000026
+                "0": 0.41000000000000025,
+                "1": 0.09000000000000001
             },
             {
                 "0": 0.5000000000000003
@@ -41,13 +41,13 @@
     },
     "outcomeProbabilities": {
         "Not realistic": 0.013990372500000034,
-        "Realistic": 0.021663000000000054
+        "Realistic": 0.02112781250000005
     },
     "result": "Realistic",
     "scrapedExampleHeadlines": {
         "Guardian": [
-            "Real Madrid v Chelsea: Champions League semi-final \u2013 live!",
-            "Sales of Crocs soar as rubber shoe brand predicts bumper year"
+            "Biden hails \u2018stunning progress\u2019 on Covid but warns Americans: \u2018Do not let up now\u2019 \u2013 live",
+            "Coronavirus live news: more countries tighten travel restrictions for arrivals from India"
         ],
         "DailyMash": [
             "Five ways to make your waitress fantasise about murdering you",
@@ -63,15 +63,17 @@
                 "NewsArticle"
             ],
             "headline": [
-                "Real Madrid v Chelsea: Champions League semi-final \u2013 live!"
+                "Biden hails \u2018stunning progress\u2019 on Covid but warns Americans: \u2018Do not let up now\u2019 \u2013 live"
             ],
             "author": [
-                "Paul Doyle"
+                "Joanna Walters"
             ],
             "datePublished": [
-                "2021-04-27T19:22:46Z"
+                "2021-04-27T21:15:05Z"
             ],
-            "description": [],
+            "description": [
+                "An article from The Guardian"
+            ],
             "publisher": {
                 "@type": [
                     "Organization"
@@ -89,15 +91,29 @@
                 "NewsArticle"
             ],
             "headline": [
-                "Sales of Crocs soar as rubber shoe brand predicts bumper year"
+                "Coronavirus live news: more countries tighten travel restrictions for arrivals from India"
             ],
             "author": [
-                "Joanna Partridge"
+                "Alison Rourke",
+                "Martin Belam",
+                "Ben Quinn",
+                "Lucy Campbell",
+                "Jedidajah Otte",
+                "Angela Giuffrida",
+                "Kate Connolly",
+                "Stephen Burgen",
+                "Ali Martin",
+                "Elias Visontay",
+                "Sarah Martin",
+                "Christopher Knaus",
+                "Haroon Siddique"
             ],
             "datePublished": [
-                "2021-04-27T19:13:11Z"
+                "2021-04-27T21:14:49Z"
             ],
-            "description": [],
+            "description": [
+                "An article from The Guardian"
+            ],
             "publisher": {
                 "@type": [
                     "Organization"
@@ -123,7 +139,9 @@
             "datePublished": [
                 "2021-04-27T10:31:32+00:00"
             ],
-            "description": [],
+            "description": [
+                "An article from The Daily Mash"
+            ],
             "publisher": {
                 "@type": [
                     "Organization"
@@ -149,7 +167,9 @@
             "datePublished": [
                 "2021-04-27T09:48:51+00:00"
             ],
-            "description": [],
+            "description": [
+                "An article from The Daily Mash"
+            ],
             "publisher": {
                 "@type": [
                     "Organization"

@@ -15,7 +15,10 @@ from CV import CV
 
 import ml
 
+filterTerms = []
+
 def filterChoice(filterFile):
+    filterTerms = []
     noOfFilters = int(input('Do you want to filter ' + filterFile +' by 1 or multiple terms? Choose \n 1. 1 term' \
         '\n 2. Multiple terms \n'))
     if noOfFilters == 1:
@@ -78,4 +81,9 @@ def run_guide():
     
     if (headline):
         filterChoice(headline)
-        ml.demo(headline)
+        output = uc.GetOutputDir()
+        results = ml.demo(headlines, filterTerms)
+        for result in results:
+            # Send to machine readable output
+            mrOutput.exportchoice(output, result)
+
