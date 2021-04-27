@@ -1,5 +1,163 @@
 {
-    "Title": "Lunch",
-    "Tasty": "78%",
-    "Fruity": "0%"
+    "output": "Output",
+    "inputHeadline": "swag gamers looking sus in the Mordor",
+    "predictionModel": {
+        "Not realistic": [
+            {
+                "0": 0.4700000000000003,
+                "-1": 0.015,
+                "1": 0.015
+            },
+            {
+                "0": 0.3550000000000002,
+                "1": 0.14500000000000005
+            },
+            {
+                "0": 0.39000000000000024,
+                "1": 0.11000000000000003
+            },
+            {
+                "0": 0.43000000000000027,
+                "1": 0.06999999999999999
+            }
+        ],
+        "Realistic": [
+            {
+                "0": 0.4800000000000003,
+                "1": 0.02
+            },
+            {
+                "0": 0.4350000000000003,
+                "1": 0.06499999999999999
+            },
+            {
+                "1": 0.085,
+                "0": 0.41500000000000026
+            },
+            {
+                "0": 0.5000000000000003
+            }
+        ]
+    },
+    "outcomeProbabilities": {
+        "Not realistic": 0.013990372500000034,
+        "Realistic": 0.021663000000000054
+    },
+    "result": "Realistic",
+    "scrapedExampleHeadlines": {
+        "Guardian": [
+            "Real Madrid v Chelsea: Champions League semi-final \u2013 live!",
+            "Sales of Crocs soar as rubber shoe brand predicts bumper year"
+        ],
+        "DailyMash": [
+            "Five ways to make your waitress fantasise about murdering you",
+            "Creepy man in his 30s dating 19-year-old to protect her from other creepy men in their 30s"
+        ]
+    },
+    "schema": [
+        {
+            "@context": [
+                "schema.org"
+            ],
+            "@type": [
+                "NewsArticle"
+            ],
+            "headline": [
+                "Real Madrid v Chelsea: Champions League semi-final \u2013 live!"
+            ],
+            "author": [
+                "Paul Doyle"
+            ],
+            "datePublished": [
+                "2021-04-27T19:22:46Z"
+            ],
+            "description": [],
+            "publisher": {
+                "@type": [
+                    "Organization"
+                ],
+                "name": [
+                    "The Guardian"
+                ]
+            }
+        },
+        {
+            "@context": [
+                "schema.org"
+            ],
+            "@type": [
+                "NewsArticle"
+            ],
+            "headline": [
+                "Sales of Crocs soar as rubber shoe brand predicts bumper year"
+            ],
+            "author": [
+                "Joanna Partridge"
+            ],
+            "datePublished": [
+                "2021-04-27T19:13:11Z"
+            ],
+            "description": [],
+            "publisher": {
+                "@type": [
+                    "Organization"
+                ],
+                "name": [
+                    "The Guardian"
+                ]
+            }
+        },
+        {
+            "@context": [
+                "schema.org"
+            ],
+            "@type": [
+                "NewsArticle"
+            ],
+            "headline": [
+                "Five ways to make your waitress fantasise about murdering you"
+            ],
+            "author": [
+                "thedailymash"
+            ],
+            "datePublished": [
+                "2021-04-27T10:31:32+00:00"
+            ],
+            "description": [],
+            "publisher": {
+                "@type": [
+                    "Organization"
+                ],
+                "name": [
+                    "Digitalbox"
+                ]
+            }
+        },
+        {
+            "@context": [
+                "schema.org"
+            ],
+            "@type": [
+                "NewsArticle"
+            ],
+            "headline": [
+                "Creepy man in his 30s dating 19-year-old to protect her from other creepy men in their 30s"
+            ],
+            "author": [
+                "thedailymash"
+            ],
+            "datePublished": [
+                "2021-04-27T09:48:51+00:00"
+            ],
+            "description": [],
+            "publisher": {
+                "@type": [
+                    "Organization"
+                ],
+                "name": [
+                    "Digitalbox"
+                ]
+            }
+        }
+    ]
 }

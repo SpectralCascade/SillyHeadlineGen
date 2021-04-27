@@ -1,9 +1,10 @@
 import requests
 from bs4 import BeautifulSoup
+from CV import CV
 import csv
 import string
 import math
-import sys
+import nlp
 
 
 def categoriseArticle(headline, content):
@@ -67,30 +68,91 @@ def chaserScrape():
 
 
 # TODO: extract article contents
-def dailymashScrape(max_headlines):
+def dailymashScrape(max_headlines, category=""):
     num = 0
     all_headlines = []
+    query = ""
+    trueCategory = ""
+    categorisedHeadlines = {"Europe": [],
+                            "Asia": [],
+                            "Africa": [],
+                            "North America": [],
+                            "South America": [],
+                            "Oceania": [],
+                            "Person": [],
+                            "Place": [],
+                            "Entertainment": [],
+                            "Science": [],
+                            "Health": [],
+                            "Sport": [],
+                            "Politics": []}
+    schemaList = []
+    for key in CV:
+        if category in CV[key]:
+            trueCategory = category
+            if category == "Science":
+                query = "science-technology"
+            elif category == "Entertainment":
+                query = "art-entertainment"
+            elif category in CV["Region"]:
+                query = "international"
+            else:
+                query = category
+
     for i in range(100):
-        url = (f'https://www.thedailymash.co.uk/news/page/{i}')
+        url = (f'https://www.thedailymash.co.uk/news/{query}/page/{i}')
         page = requests.get(url)
         soup1 = BeautifulSoup(page.content, 'html.parser')
 
-        print("\nPage " + str(i) + "\n")
-        #with open('dailymashHeadlines.csv', 'a', newline='') as file:
-        #writer = csv.writer(file)
+        print("Scraping The Daily Mash with GET request to " + url)
         headlines = soup1.find_all('div', {'class': 'holder'})
         for headline in headlines:
+            schemaDict = {"@context": ["schema.org"],
+                          "@type": ["NewsArticle"],
+                          "headline": [],
+                          "author": ["thedailymash"],
+                          "datePublished": [],
+                          "description": [],
+                          "publisher": {"@type": ["Organization"], "name": ["Digitalbox"]}
+                          }
             headlineStripped = headline.find_all('a')
             for headline2 in headlineStripped:
+                newPage = requests.get(headline2['href'])
+                soup2 = BeautifulSoup(newPage.content, 'html.parser')
+                i = soup2.find('time')
+                schemaDict["datePublished"].append(i['datetime'])
                 headlineString = headline2.text
-                #writer.writerow([headlineString])
+                for entities in nlp.GetHeadlineNLP().nlp_extract(headlineString)["entities"].values():
+                    if entities == "PERSON":
+                        for entities2 in nlp.GetHeadlineNLP().nlp_extract(headlineString)["entities"]:
+                            person = list(nlp.GetHeadlineNLP().nlp_extract(headlineString)["entities"].keys())[list(nlp.GetHeadlineNLP().nlp_extract(headlineString)["entities"].values()).index("PERSON")]
+                            if person not in categorisedHeadlines["Person"]:
+                                categorisedHeadlines["Person"].append(person)
+
+                    elif entities == "LOC" or entities == "GPE":
+                        for entities2 in nlp.GetHeadlineNLP().nlp_extract(headlineString)["entities"]:
+                            #print(nlp.GetHeadlineNLP().nlp_extract(headlineString)["entities"])
+                            if entities == "LOC":
+                                place = list(nlp.GetHeadlineNLP().nlp_extract(headlineString)["entities"].keys())[list(nlp.GetHeadlineNLP().nlp_extract(headlineString)["entities"].values()).index("LOC")]
+                            elif entities == "GPE":
+                                place = list(nlp.GetHeadlineNLP().nlp_extract(headlineString)["entities"].keys())[list(nlp.GetHeadlineNLP().nlp_extract(headlineString)["entities"].values()).index("GPE")]
+
+                            if place not in categorisedHeadlines["Place"]:
+                                categorisedHeadlines["Place"].append(place)
                 # test categorisation
                 #print("Headline: " + headlineString + " | Categories: " + str(categoriseArticle(headlineString, "")))
                 num += 1
+                schemaDict["headline"].append(headlineString)
+                schemaList.append(schemaDict)
+                if (trueCategory != ""):
+                    categorisedHeadlines[trueCategory].append(headlineString)
                 all_headlines.append(headlineString)
                 if (num >= max_headlines):
-                    return all_headlines
-    return all_headlines
+                    return {"headlines": all_headlines, "schema": schemaList, "categorised": []}
+
+    #for key, value in schemaDict.items():
+        #print(key, ' : ', value)
+    return {"headlines": all_headlines, "schema": schemaList, "categorised": []}
 
 
 def beavertonScrape():
@@ -152,10 +214,14 @@ def newYTScrape(max_headlines, category = ""):
 
     return all_headlines
 
-def guardianScrape(max_headlines, category=""):
+
+def guardianScrape(max_headlines, category=[]):
     all_headlines = []
     apikey = "01dfb74a-30e0-468a-a59e-040459e67a38"
-    query = category
+    query = ""
+    #print(CV.values())
+    #print(category)
+    schemaList = []
     categorisedHeadlines = {"Europe": [],
                             "Asia": [],
                             "Africa": [],
@@ -163,43 +229,67 @@ def guardianScrape(max_headlines, category=""):
                             "South America": [],
                             "Oceania": [],
                             "Entertainment": [],
-                            "Food": [],
+                            "Science": [],
                             "Health": [],
                             "Sport": [],
                             "Politics": []}
-    categories = {"Europe", "Asia", "Africa", "North America", "South America", "Oceania", "Entertainment", "Food", "Health", "Sport", "Politics"}
+
+    for cat in category:
+        for key in CV:
+            if cat in CV[key]:
+                query = query + (f"{cat}%20")
+
     begin_date = "2000-10-01"
     total_pages = math.ceil(max_headlines / 10)
     count = 0
     for p in range(total_pages):
-        url = f"https://content.guardianapis.com/search?" + f"api-key={apikey}" + f"&query-fields=headline&from-date={begin_date}" + (f"&q={query}" if query else f"") + f"&page={p+1}"
+        url = f"https://content.guardianapis.com/search?" + f"api-key={apikey}" + f"&query-fields=headline&show-tags=contributor&from-date={begin_date}" + (f"&q={query}" if query else f"") + f"&page={p+1}"
         print("Querying The Guardian database with GET request to " + url)
         r = requests.get(url)
         #print(r.json())
         #print(r)
         if 'response' in r.json():
             for dict in r.json()['response']['results']:
+                schemaDict = {"@context": ["schema.org"],
+                              "@type": ["NewsArticle"],
+                              "headline": [],
+                              "author": [],
+                              "datePublished": [],
+                              "description": [],
+                              "publisher": {"@type": ["Organization"], "name": ["The Guardian"]}
+                              }
                 if count < (max_headlines):
+                    schemaDict["headline"].append(dict['webTitle'].split('|', 1)[0])
+                    for id in dict["tags"]:
+                        schemaDict["author"].append(id['webTitle'])
+                    schemaDict["datePublished"].append(dict['webPublicationDate'])
+                    for key in categorisedHeadlines:
+                        if key in category:
+                            categorisedHeadlines[key].append(dict['webTitle'].split('|', 1)[0])
                     all_headlines.append(dict['webTitle'].split('|', 1)[0])
                     count += 1
+                    schemaList.append(schemaDict)
                 else:
                     break
-    #print(all_headlines)
-    return all_headlines
+    return {"headlines": all_headlines, "schema": schemaList, "categorised": categorisedHeadlines}
 
-if __name__ == "__main__":
-   import nlp
 
-   max_scrape = 10000
-   adjectives = set()
-   with open("data/exclusive_real_adjectives.csv", "w", newline='', encoding='utf-8') as csvfile:
-       g_headlines = guardianScrape(max_scrape)
-       writer = csv.writer(csvfile, delimiter=',')
-       for headline in g_headlines:
-           extracted = nlp.GetHeadlineNLP().nlp_extract(headline)
-           for adj in extracted["adjectives"]:
-               #print (adj)
-               if adj not in adjectives:
-                   adjectives.add(adj)
-                   writer.writerow([adj])
-   print("Finished output in data/exclusive_real_adjectives.csv")
+#guardianScrape(5)
+dailymashScrape(5)
+
+# if __name__ == "__main__":
+#    import nlp
+#
+#    max_scrape = 10000
+#    adjectives = set()
+#    with open("data/exclusive_real_adjectives.csv", "w", newline='', encoding='utf-8') as csvfile:
+#        g_headlines = guardianScrape(max_scrape)
+#        writer = csv.writer(csvfile, delimiter=',')
+#        for headline in g_headlines:
+#            extracted = nlp.GetHeadlineNLP().nlp_extract(headline)
+#            for adj in extracted["adjectives"]:
+#                #print (adj)
+#                if adj not in adjectives:
+#                    adjectives.add(adj)
+#                    writer.writerow([adj])
+#    print("Finished output in data/exclusive_real_adjectives.csv")
