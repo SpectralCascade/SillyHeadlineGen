@@ -4,6 +4,7 @@ from CV import CV
 import csv
 import string
 import math
+import nlp
 
 
 def categoriseArticle(headline, content):
@@ -71,6 +72,18 @@ def dailymashScrape(max_headlines, category=""):
     num = 0
     all_headlines = []
     query = ""
+    trueCategory = ""
+    categorisedHeadlines = {"Europe": [],
+                            "Asia": [],
+                            "Africa": [],
+                            "North America": [],
+                            "South America": [],
+                            "Oceania": [],
+                            "Entertainment": [],
+                            "Science": [],
+                            "Health": [],
+                            "Sport": [],
+                            "Politics": []}
     schemaDict = {"@context": ["schema.org"],
                   "@type": ["NewsArticle"],
                   "headline": [],
@@ -78,13 +91,16 @@ def dailymashScrape(max_headlines, category=""):
                   "datePublished": [],
                   "description": [],
                   "publisher": {"@type": ["Organization"], "name": ["Digitalbox"]}
-                      }
+                  }
     for key in CV:
         if category in CV[key]:
+            trueCategory = category
             if category == "Science":
                 query = "science-technology"
             elif category == "Entertainment":
                 query = "art-entertainment"
+            elif category in CV["Region"]:
+                query = "international"
             else:
                 query = category
 
@@ -103,13 +119,18 @@ def dailymashScrape(max_headlines, category=""):
                 i = soup2.find('time')
                 schemaDict["datePublished"].append(i['datetime'])
                 headlineString = headline2.text
+                print(nlp.GetHeadlineNLP().nlp_extract(headlineString))
                 # test categorisation
                 #print("Headline: " + headlineString + " | Categories: " + str(categoriseArticle(headlineString, "")))
                 num += 1
                 schemaDict["headline"].append(headlineString)
+                if (trueCategory != ""):
+                    categorisedHeadlines[trueCategory].append(headlineString)
                 all_headlines.append(headlineString)
                 if (num >= max_headlines):
                     for key, value in schemaDict.items():
+                        print(key, ' : ', value)
+                    for key, value in categorisedHeadlines.items():
                         print(key, ' : ', value)
                     return all_headlines
 
@@ -237,7 +258,7 @@ def guardianScrape(max_headlines, category=[]):
 
 
 #print(guardianScrape(10, ["Europe", "North America", "Science", "Asia"]))
-dailymashScrape(10, "Science")
+dailymashScrape(10, "Europe")
 
 # if __name__ == "__main__":
 #    import nlp
