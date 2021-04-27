@@ -179,7 +179,7 @@ def demo(all_headlines, filters):
                 best = v
         #print(data)
         print("Determined best match to be " + best + " with a score of " + str(best_score))
-        results.append({"Training Set": dailymash["schema"] + guardian["schema"], "Input Headline" : headline, "Prediction Model" : learner.model, "Outcome Probabilities" : data, "Result" : best, "Output": output})
+        results.append({"Training Set": dailymash["schema"] + guardian["schema"], "Input Headline" : headline, "Prediction Model" : learner.model, "Outcome Probabilities" : data, "Result" : best})
     return results
 
 if (__name__ == "__main__"):
