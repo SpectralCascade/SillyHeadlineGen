@@ -125,8 +125,9 @@ def dailymashScrape(max_headlines, category=""):
                 for entities in nlp.GetHeadlineNLP().nlp_extract(headlineString)["entities"].values():
                     if entities == "PERSON":
                         for entities2 in nlp.GetHeadlineNLP().nlp_extract(headlineString)["entities"]:
-                            person = entities2
-                            categorisedHeadlines["Person"].append(person)
+                            person = list(nlp.GetHeadlineNLP().nlp_extract(headlineString)["entities"].keys())[list(nlp.GetHeadlineNLP().nlp_extract(headlineString)["entities"].values()).index("PERSON")]
+                            if person not in categorisedHeadlines["Person"]:
+                                categorisedHeadlines["Person"].append(person)
 
                     elif entities == "LOC" or entities == "GPE":
                         for entities2 in nlp.GetHeadlineNLP().nlp_extract(headlineString)["entities"]:
@@ -147,8 +148,6 @@ def dailymashScrape(max_headlines, category=""):
                     categorisedHeadlines[trueCategory].append(headlineString)
                 all_headlines.append(headlineString)
                 if (num >= max_headlines):
-                    for key, value in categorisedHeadlines.items():
-                        print(key, ' : ', value)
                     return {"headlines": all_headlines, "schema": schemaList, "categorised": []}
 
     #for key, value in schemaDict.items():
@@ -276,7 +275,7 @@ def guardianScrape(max_headlines, category=[]):
 
 
 #guardianScrape(5)
-#dailymashScrape(10, "Asia")
+dailymashScrape(5)
 
 # if __name__ == "__main__":
 #    import nlp
