@@ -1,26 +1,81 @@
 import sys
 from CV import CV
+import urllib.request
+import userConsole as uc
+
 
 if __name__ == '__main__':
+    args = sys.argv[1:]		# extracting arguments from the command line
+    options = {"-h", "-help", "-u", "-url", "-h", "-headline", "-f", "-filter", "-o", "-output"}
+    last_option = ''
+    was_option = False
+    headlines = []
+    output = ''
+    filterTerms = []
 
-	args = sys.argv[1:]		# extracting arguments from the command line
-	count = 0;
-	print()
-	options = {"-h", "-help", "-u", "-url", "-h", "-headline", "-f", "-filter", "-o", "-output"}
+    for i in range(len(args)):
+        was_option = False
+        # check if the argument is an option
+        if args[i].lower() in options:
+            last_option = args[i].lower()
+            was_option = True
+        # if last option is help
+        if last_option == "-help" or last_option == "-h":
+            print("\n\t Welcome to the Parody Headline/URL Checker!"
+                  "\n"
+                  "\n\t List of Options:"
+                  "\n\t -help or -h"
+                  "\n\t -url or -u"
+                  "\n\t -headline or -h"
+                  "\n\t -filter or -f"
+                  "\n\t -output or -o"
+                  "\n"
+                  "\n\t You are expected to enter these options in the correct order followed"
+                  "\n\t by the URLs or Headlines that you wish to test !"
+                  "\n"
+                  "\t Input arguments needed:\n"
+                  "\n\t\t [-url/-headline] =  Input whether you are checking a URL or a Headline \n"
+                  "\t\t [URL or TITLE) = Input the Headlines or the URLs enclosed in 'single quotes'. \n"
+                  "\t\t [-filter] = Specifies that you would like to filter your search.\n"
+                  "\t\t [Filter(s)] = Input the terms you want the headline or URL to be filtered by. \n"
+                  "\t\t [-output] = Specifies that you would like your output saved to a specific path.\n"
+                  "\t\t [Path] = Enter the file path where you would like your output to be stored.\n"
+                  "\n\t Example Input:\n"
+                  "\n\t -headline 'David Jimson is a good bloke, apparently !' -filter Europe Person Sport\n"
+                  "\t [cont.] -output C:\Program Files\n"
+                  "\n\t Choose to filter from these Terms:")
+            for k, v in CV.items():
+                print('\t\t {key}: {values}'.format(key=k, values=', '.join('{}'.format(', '.join(x.split())) for x in v)))
+            break
+        if was_option:
+            continue
+
+        elif last_option == "-url" or last_option == "-u":
+            url = args[i]
+            import urllib.request
+            with urllib.request.urlopen('http://python.org/') as response:
+                html = response.read()
+            print(html)
+
+        elif last_option == "-headline" or last_option == "-h":
+            headlines.append(args[i])
 
 
-	while (True):
-
-		# if there are no more arguments
-		if count >= len(args):
-			print()
-			print("****The list of arguments is finished !****")
-			break
-
-		# if arguments still exist	
-		else:
-
-			print (args[count])
-			count = count + 1
+        elif last_option == "-filter" or last_option == "f":
+            CV_vals = CV.values()
+            CV_single = []
+            for sublist in CV_vals:
+                for item in sublist:
+                    CV_single.append(item)
+            CV_single_lower = [x.lower() for x in CV_single]
+            if args[i].lower() in CV_single_lower:
+                filterTerms.append(args[i])
 
 
+        elif last_option == "-output" or last_option == "o":
+            output = args[i]
+
+
+    if not headlines:
+        run_guide()
+    else

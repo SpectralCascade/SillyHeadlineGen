@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="all_countries_dict">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/src/data/all_countries_dict.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
