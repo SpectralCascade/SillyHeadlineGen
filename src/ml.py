@@ -153,7 +153,7 @@ def demo(headline):
     headlines = scrape.dailymashScrape(scrape_limit)
     total_parody = len(headlines)
     
-    headlines = headlines + scrape.guardianScrape(scrape_limit)
+    headlines = headlines + scrape.guardianScrape(scrape_limit)["headlines"]
     total_real = len(headlines) - total_parody
     
     #print("Headlines: " + str(headlines))

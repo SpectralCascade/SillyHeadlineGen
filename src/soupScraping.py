@@ -109,7 +109,7 @@ def dailymashScrape(max_headlines, category=""):
         page = requests.get(url)
         soup1 = BeautifulSoup(page.content, 'html.parser')
 
-        print("\nPage " + str(i) + "\n")
+        print("Scraping The Daily Mash with GET request to " + url)
         headlines = soup1.find_all('div', {'class': 'holder'})
         for headline in headlines:
             headlineStripped = headline.find_all('a')
@@ -128,14 +128,12 @@ def dailymashScrape(max_headlines, category=""):
                     categorisedHeadlines[trueCategory].append(headlineString)
                 all_headlines.append(headlineString)
                 if (num >= max_headlines):
-                    for key, value in schemaDict.items():
-                        print(key, ' : ', value)
-                    for key, value in categorisedHeadlines.items():
-                        print(key, ' : ', value)
+                    #for key, value in schemaDict.items():
+                    #    print(key, ' : ', value)
                     return all_headlines
 
-    for key, value in schemaDict.items():
-        print(key, ' : ', value)
+    #for key, value in schemaDict.items():
+        #print(key, ' : ', value)
     return all_headlines
 
 
@@ -203,8 +201,8 @@ def guardianScrape(max_headlines, category=[]):
     all_headlines = []
     apikey = "01dfb74a-30e0-468a-a59e-040459e67a38"
     query = ""
-    print(CV.values())
-    print(category)
+    #print(CV.values())
+    #print(category)
     schemaDict = {"@context": ["schema.org"],
                   "@type": ["NewsArticle"],
                   "headline": [],
@@ -253,12 +251,11 @@ def guardianScrape(max_headlines, category=[]):
                     count += 1
                 else:
                     break
-
-    return all_headlines
+    return {"headlines": all_headlines, "schema": schemaDict, "categorised": categorisedHeadlines}
 
 
 #print(guardianScrape(10, ["Europe", "North America", "Science", "Asia"]))
-dailymashScrape(10, "Europe")
+#dailymashScrape(10, "Science")
 
 # if __name__ == "__main__":
 #    import nlp
