@@ -79,6 +79,8 @@ def dailymashScrape(max_headlines, category=""):
                             "North America": [],
                             "South America": [],
                             "Oceania": [],
+                            "Person": [],
+                            "Place": [],
                             "Entertainment": [],
                             "Science": [],
                             "Health": [],
@@ -120,7 +122,22 @@ def dailymashScrape(max_headlines, category=""):
                 i = soup2.find('time')
                 schemaDict["datePublished"].append(i['datetime'])
                 headlineString = headline2.text
-                print(nlp.GetHeadlineNLP().nlp_extract(headlineString))
+                for entities in nlp.GetHeadlineNLP().nlp_extract(headlineString)["entities"].values():
+                    if entities == "PERSON":
+                        for entities2 in nlp.GetHeadlineNLP().nlp_extract(headlineString)["entities"]:
+                            person = entities2
+                            categorisedHeadlines["Person"].append(person)
+
+                    elif entities == "LOC" or entities == "GPE":
+                        for entities2 in nlp.GetHeadlineNLP().nlp_extract(headlineString)["entities"]:
+                            #print(nlp.GetHeadlineNLP().nlp_extract(headlineString)["entities"])
+                            if entities == "LOC":
+                                place = list(nlp.GetHeadlineNLP().nlp_extract(headlineString)["entities"].keys())[list(nlp.GetHeadlineNLP().nlp_extract(headlineString)["entities"].values()).index("LOC")]
+                            elif entities == "GPE":
+                                place = list(nlp.GetHeadlineNLP().nlp_extract(headlineString)["entities"].keys())[list(nlp.GetHeadlineNLP().nlp_extract(headlineString)["entities"].values()).index("GPE")]
+
+                            if place not in categorisedHeadlines["Place"]:
+                                categorisedHeadlines["Place"].append(place)
                 # test categorisation
                 #print("Headline: " + headlineString + " | Categories: " + str(categoriseArticle(headlineString, "")))
                 num += 1
@@ -130,6 +147,8 @@ def dailymashScrape(max_headlines, category=""):
                     categorisedHeadlines[trueCategory].append(headlineString)
                 all_headlines.append(headlineString)
                 if (num >= max_headlines):
+                    for key, value in categorisedHeadlines.items():
+                        print(key, ' : ', value)
                     return {"headlines": all_headlines, "schema": schemaDict, "categorised": []}
 
     #for key, value in schemaDict.items():
@@ -256,8 +275,8 @@ def guardianScrape(max_headlines, category=[]):
     return {"headlines": all_headlines, "schema": schemaList, "categorised": categorisedHeadlines}
 
 
-#print(guardianScrape(10, ["Europe", "North America", "Science", "Asia"]))
-#dailymashScrape(10, "Science")
+#guardianScrape(5)
+#dailymashScrape(10, "Asia")
 
 # if __name__ == "__main__":
 #    import nlp
