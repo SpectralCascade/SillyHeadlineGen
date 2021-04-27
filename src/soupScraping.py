@@ -4,7 +4,6 @@ from CV import CV
 import csv
 import string
 import math
-import sys
 
 
 def categoriseArticle(headline, content):
@@ -68,29 +67,54 @@ def chaserScrape():
 
 
 # TODO: extract article contents
-def dailymashScrape(max_headlines):
+def dailymashScrape(max_headlines, category=""):
     num = 0
     all_headlines = []
+    query = ""
+    schemaDict = {"@context": ["schema.org"],
+                  "@type": ["NewsArticle"],
+                  "headline": [],
+                  "author": ["thedailymash"],
+                  "datePublished": [],
+                  "description": [],
+                  "publisher": {"@type": ["Organization"], "name": ["Digitalbox"]}
+                      }
+    for key in CV:
+        if category in CV[key]:
+            if category == "Science":
+                query = "science-technology"
+            elif category == "Entertainment":
+                query = "art-entertainment"
+            else:
+                query = category
+
     for i in range(100):
-        url = (f'https://www.thedailymash.co.uk/news/page/{i}')
+        url = (f'https://www.thedailymash.co.uk/news/{query}/page/{i}')
         page = requests.get(url)
         soup1 = BeautifulSoup(page.content, 'html.parser')
 
         print("\nPage " + str(i) + "\n")
-        #with open('dailymashHeadlines.csv', 'a', newline='') as file:
-        #writer = csv.writer(file)
         headlines = soup1.find_all('div', {'class': 'holder'})
         for headline in headlines:
             headlineStripped = headline.find_all('a')
             for headline2 in headlineStripped:
+                newPage = requests.get(headline2['href'])
+                soup2 = BeautifulSoup(newPage.content, 'html.parser')
+                i = soup2.find('time')
+                schemaDict["datePublished"].append(i['datetime'])
                 headlineString = headline2.text
-                #writer.writerow([headlineString])
                 # test categorisation
                 #print("Headline: " + headlineString + " | Categories: " + str(categoriseArticle(headlineString, "")))
                 num += 1
+                schemaDict["headline"].append(headlineString)
                 all_headlines.append(headlineString)
                 if (num >= max_headlines):
+                    for key, value in schemaDict.items():
+                        print(key, ' : ', value)
                     return all_headlines
+
+    for key, value in schemaDict.items():
+        print(key, ' : ', value)
     return all_headlines
 
 
@@ -212,8 +236,8 @@ def guardianScrape(max_headlines, category=[]):
     return all_headlines
 
 
-print(guardianScrape(10, ["Europe", "North America", "Science", "Asia"]))
-#queryfieldTest()
+#print(guardianScrape(10, ["Europe", "North America", "Science", "Asia"]))
+dailymashScrape(10, "Science")
 
 # if __name__ == "__main__":
 #    import nlp
