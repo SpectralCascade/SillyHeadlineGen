@@ -131,7 +131,7 @@ def trainLearner(headlines, parodyOrNot):
     learner.train()
     return learner
 
-def demo(headline):
+def demo(all_headlines, filters):
     # Modified from https://github.com/RobertJGabriel/Google-profanity-words/blob/master/list.txt on 25/04/2021
     with open('data/profanity.csv', encoding='utf-8') as csv_file:
         reader = csv.reader(csv_file, delimiter=',')
@@ -150,34 +150,37 @@ def demo(headline):
 
     # Scrape a bunch of headlines for the training set
     # Always get parody headlines first
-    headlines = scrape.dailymashScrape(scrape_limit)["headlines"]
+    dailymash = scrape.dailymashScrape(scrape_limit, filters[0] if filters else "")
+    headlines = dailymash["headlines"]
     total_parody = len(headlines)
     
-    headlines = headlines + scrape.guardianScrape(scrape_limit)["headlines"]
+    guardian = scrape.guardianScrape(scrape_limit, filters)
+    headlines = headlines + guardian["headlines"]
     total_real = len(headlines) - total_parody
     
-    #print("Headlines: " + str(headlines))
     print("Scraped " + str(len(headlines)) + " headlines out of limit " + str(scrape_limit * 2))
- 
-    to_predict = headlineToTrainingEntry(headline)
     
+    # Train the naive bayes model
     learner = trainLearner(headlines, [is_parody] * total_parody + [not_parody] * total_real)
-    #print(learner.dataset)
-    
-    print("Input data: " + str(to_predict))
     print("Prediction model: " + str(learner.model))
-    predictionModel = learner.model
-    data = learner.classify(to_predict)
-    best_score = 0
-    best = "\"Unknown\""
-    for v in data:
-        if data[v] > best_score:
-            best_score = data[v]
-            best = v
-    print(data)
-    print("Determined best match to be " + best + " with a score of " + str(best_score))
-
-    return {"Input Headline" : headline, "Prediction Model" : predictionModel, "Outcome Probabilities" : data, "Result" : best}
+    
+    results = []
+    # Now iterate over all headlines
+    for headline in all_headlines:
+        to_predict = headlineToTrainingEntry(headline)
+        
+        print("Input data: " + str(to_predict))
+        data = learner.classify(to_predict)
+        best_score = 0
+        best = "\"Unknown\""
+        for v in data:
+            if data[v] > best_score:
+                best_score = data[v]
+                best = v
+        #print(data)
+        print("Determined best match to be " + best + " with a score of " + str(best_score))
+        results.append({"Training Set": dailymash["schema"] + guardian["schema"], "Input Headline" : headline, "Prediction Model" : learner.model, "Outcome Probabilities" : data, "Result" : best, "Output": output})
+    return results
 
 if (__name__ == "__main__"):
     if (len(sys.argv) > 1):
