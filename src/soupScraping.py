@@ -149,7 +149,7 @@ def dailymashScrape(max_headlines, category=""):
                 if (num >= max_headlines):
                     for key, value in categorisedHeadlines.items():
                         print(key, ' : ', value)
-                    return {"headlines": all_headlines, "schema": schemaDict, "categorised": []}
+                    return {"headlines": all_headlines, "schema": schemaList, "categorised": []}
 
     #for key, value in schemaDict.items():
         #print(key, ' : ', value)
