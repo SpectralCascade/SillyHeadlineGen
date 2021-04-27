@@ -2,6 +2,7 @@ import nlp
 import soupScraping as scrape
 import csv
 import sys
+import textblob # used for sentiment analysis
 
 # Machine learning class for training basic classification
 class Learner:
@@ -20,7 +21,7 @@ class Learner:
         self.dataset = training_dataset
         self.model = dict()
         self.classes = dict()
-
+    
     # Takes a list of data and returns the probabilities for each classification
     def classify(self, data):
         value = dict()
@@ -32,7 +33,7 @@ class Learner:
                 else:
                     value[key] = 0
         return value
-
+    
     # Runs the machine learning logic over the training dataset and builds a probability model.
     # This uses the Naive Bayes algorithm, based on discrete variables (multinomial distribution).
     def train(self):
@@ -69,32 +70,48 @@ class Learner:
                 if dataset[col][row] not in bayes[self.dataset["answers"][row]][col]:
                     bayes[self.dataset["answers"][row]][col][dataset[col][row]] = 0
                 bayes[self.dataset["answers"][row]][col][dataset[col][row]] += inc
-        #print(bayes)
+        #print(bayes)    
 
-# TODO: move somewhere else
+# Set of profanity words
 profanity = set()
+# Set of adjectives that are exclusive to the parody headlines training data
+exclusive_real_adjectives = set()
+
+is_parody = "Not realistic"
+not_parody = "Realistic"
+
 # Converts headline into machine learning format
+# Takes the raw string and NLP extracted data
 def headlineToTrainingEntry(headline):
     output = [0, 0, 0, 0] # people, gpe, cardinal, profanity
-    # Perform NLP on headline
+    
+    # Extract useful information using NLP
     data = nlp.GetHeadlineNLP().nlp_extract(headline)
+    
+    # Sentiment analysis
+    output[0] = int(round(textblob.TextBlob(headline).sentiment.polarity))
+    
     # These entity counts are very rigid, non useful measures of "parody or not"
     # While the probabilistic relationship may hold between a particular pair of websites or headline styles,
     # the whole point of parody headlines is that they have the *form* of real article headlines,
     # but context and juxtaposition should differentiate them
     # For instance, the seemingly random use of profanity in a parody headline vs usage in a quote or subject name in a real news headline.
-    for ent in data["entities"]:
-        if (data["entities"][ent] == "PERSON"):
-            output[0] += 1
-        elif (data["entities"][ent] == "GPE"):
-            output[1] += 1
+    #for ent in data["entities"]:
+        #if (data["entities"][ent] == "PERSON"):
+            #output[0] += 1
+        #elif (data["entities"][ent] == "GPE"):
+            #output[1] += 1
         #elif (data["entities"][ent] == "CARDINAL"):
             #output[2] += 1
-    if (len(data["adjectives"])) > 0:
-        output[2] = 1
+    for adj in data["adjectives"]:
+        if adj not in exclusive_real_adjectives:
+            # This does rely on having a large training set, but it's more accurate than checking for any adjective
+            output[2] = 1
+            break
     for noun in data["nouns"]:
         if (noun.lower() in profanity):
             output[3] = 1
+            break
     # Make sure data is all strings
     for i in range(len(output)):
         output[i] = str(output[i])
@@ -102,19 +119,19 @@ def headlineToTrainingEntry(headline):
 
 # Takes list of headlines and list of yes/no parody or not, returns trained learner
 def trainLearner(headlines, parodyOrNot):
-    gpe = [];
-    people = [];
-    cardinals = []
+    sentiment = []
+    gpe = []
+    adjectives = []
     profanities = []
 
-    for headline in headlines:
-        data = headlineToTrainingEntry(headline);
-        people.append(data[0])
+    for i in range(len(headlines)):
+        data = headlineToTrainingEntry(headlines[i])
+        sentiment.append(data[0])
         gpe.append(data[1])
-        cardinals.append(data[2])
+        adjectives.append(data[2])
         profanities.append(data[3])
-
-    learner = Learner({"data" : [people, gpe, cardinals, profanities], "answers" : parodyOrNot})
+    
+    learner = Learner({"data" : [sentiment, gpe, adjectives, profanities], "answers" : parodyOrNot})
     #learner = Learner({"data" : [people, gpe], "answers" : ["Yes"] * 10 + ["No"] * 10})
     print(learner.dataset)
     learner.train()
@@ -126,26 +143,35 @@ def demo(headline):
         reader = csv.reader(csv_file, delimiter=',')
         for row in reader:
             profanity.add(row[0])
+    
+    # Data obtained from 10000 article headlines in The Guardian
+    with open('data/exclusive_real_adjectives.csv', encoding='utf-8') as csv_file:
+        reader = csv.reader(csv_file, delimiter=',')
+        for row in reader:
+            exclusive_real_adjectives.add(row[0])
+        #print(exclusive_real_adjectives[0])
+        #input()
 
-    scrape_limit = 50
+    scrape_limit = 100
 
     # Scrape a bunch of headlines for the training set
+    # Always get parody headlines first
     headlines = scrape.dailymashScrape(scrape_limit)
     total_parody = len(headlines)
-
-    headlines = headlines + scrape.newYTScrape(scrape_limit)
+    
+    headlines = headlines + scrape.guardianScrape(scrape_limit)
     total_real = len(headlines) - total_parody
-
+    
     #print("Headlines: " + str(headlines))
     print("Scraped " + str(len(headlines)) + " headlines out of limit " + str(scrape_limit * 2))
-
-    #headline = "A minuscule jewel-studded thong: five things to buy now the contactless limit is £100"
+ 
     to_predict = headlineToTrainingEntry(headline)
-
-    learner = trainLearner(headlines, ["Not realistic"] * total_parody + ["Realistic"] * total_real)
-
+    
+    learner = trainLearner(headlines, [is_parody] * total_parody + [not_parody] * total_real)
+    
     print("Input data: " + str(to_predict))
     print("Prediction model: " + str(learner.model))
+    predictionModel = learner.model
     data = learner.classify(to_predict)
     best_score = 0
     best = "\"Unknown\""
@@ -155,6 +181,8 @@ def demo(headline):
             best = v
     print(data)
     print("Determined best match to be " + best + " with a score of " + str(best_score))
+
+    return {"Input Headline" : headline, "Prediction Model" : predictionModel, "Outcome Probabilities" : data, "Result" : best}
 
 if (__name__ == "__main__"):
     if (len(sys.argv) > 1):

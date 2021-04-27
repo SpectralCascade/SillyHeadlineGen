@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import csv
 import string
 import math
+import sys
 
 
 def categoriseArticle(headline, content):
@@ -163,16 +164,18 @@ def guardianScrape(max_headlines, category=""):
         url = f"https://content.guardianapis.com/search?" + f"api-key={apikey}" + f"&query-fields=headline&from-date={begin_date}" + (f"&q={query}" if not query else f"") + f"&page={p+1}"
         print("Querying The Guardian database with GET request to " + url)
         r = requests.get(url)
-        for dict in r.json()['response']['results']:
-            if count < max_headlines:
-                all_headlines.append(dict['webTitle'])
-            else:
-                break
-            count += 1
+        if 'response' in r.json():
+            for dict in r.json()['response']['results']:
+                if count < max_headlines:
+                    all_headlines.append(dict['webTitle'])
+                else:
+                    break
+                count += 1
 
     return all_headlines
 
 
+<<<<<<< HEAD
 newYTScrape(10)
 
 # if __name__ == "__main__":
@@ -187,3 +190,21 @@ newYTScrape(10)
 #     for headline in dm_headlines:
 #         extracted = nlp.GetHeadlineNLP().nlp_extract(headline)
 #         print(f"{headline} => {extracted}")
+=======
+if __name__ == "__main__":
+    import nlp
+
+    max_scrape = 10000
+    adjectives = set()
+    with open("data/exclusive_real_adjectives.csv", "w", newline='', encoding='utf-8') as csvfile:
+        g_headlines = guardianScrape(max_scrape)
+        writer = csv.writer(csvfile, delimiter=',')
+        for headline in g_headlines:
+            extracted = nlp.GetHeadlineNLP().nlp_extract(headline)
+            for adj in extracted["adjectives"]:
+                #print (adj)
+                if adj not in adjectives:
+                    adjectives.add(adj)
+                    writer.writerow([adj])
+    print("Finished output in data/exclusive_real_adjectives.csv")
+>>>>>>> 5d12dee881f76cf0f90b688ab742c41f3be5bf22
