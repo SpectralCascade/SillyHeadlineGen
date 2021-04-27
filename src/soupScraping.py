@@ -76,20 +76,20 @@ def dailymashScrape(max_headlines):
         soup1 = BeautifulSoup(page.content, 'html.parser')
 
         print("\nPage " + str(i) + "\n")
-        with open('dailymashHeadlines.csv', 'a', newline='') as file:
-            #writer = csv.writer(file)
-            headlines = soup1.find_all('div', {'class': 'holder'})
-            for headline in headlines:
-                headlineStripped = headline.find_all('a')
-                for headline2 in headlineStripped:
-                    headlineString = headline2.text
-                    #writer.writerow([headlineString])
-                    # test categorisation
-                    #print("Headline: " + headlineString + " | Categories: " + str(categoriseArticle(headlineString, "")))
-                    num += 1
-                    all_headlines.append(headlineString)
-                    if (num >= max_headlines):
-                        return all_headlines
+        #with open('dailymashHeadlines.csv', 'a', newline='') as file:
+        #writer = csv.writer(file)
+        headlines = soup1.find_all('div', {'class': 'holder'})
+        for headline in headlines:
+            headlineStripped = headline.find_all('a')
+            for headline2 in headlineStripped:
+                headlineString = headline2.text
+                #writer.writerow([headlineString])
+                # test categorisation
+                #print("Headline: " + headlineString + " | Categories: " + str(categoriseArticle(headlineString, "")))
+                num += 1
+                all_headlines.append(headlineString)
+                if (num >= max_headlines):
+                    return all_headlines
     return all_headlines
 
 
