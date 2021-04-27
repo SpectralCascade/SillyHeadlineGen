@@ -83,7 +83,7 @@ not_parody = "Realistic"
 # Converts headline into machine learning format
 # Takes the raw string and NLP extracted data
 def headlineToTrainingEntry(headline):
-    output = [0, 0, 0, 0] # people, gpe, cardinal, profanity
+    output = [0, 0, 0, 0] # sentiment, subjectivity, uncommon adjective, profanity
     
     # Extract useful information using NLP
     data = nlp.GetHeadlineNLP().nlp_extract(headline)
@@ -98,11 +98,6 @@ def headlineToTrainingEntry(headline):
     # the whole point of parody headlines is that they have the *form* of real article headlines,
     # but context and juxtaposition should differentiate them
     # For instance, the seemingly random use of profanity in a parody headline vs usage in a quote or subject name in a real news headline.
-    #for ent in data["entities"]:
-    #    if (data["entities"][ent] == "PERSON"):
-    #        output[0] += 1
-    #    elif (data["entities"][ent] == "GPE"):
-    #        output[1] += 1
     for adj in data["adjectives"]:
         if adj not in exclusive_real_adjectives:
             # This does rely on having a large training set, but it's more accurate than checking for any adjective
