@@ -111,11 +111,11 @@ def dailymashScrape(max_headlines, category=""):
                 if (num >= max_headlines):
                     #for key, value in schemaDict.items():
                     #    print(key, ' : ', value)
-                    return all_headlines
+                    return {"headlines": all_headlines, "schema": schemaDict, "categorised": []}
 
     #for key, value in schemaDict.items():
         #print(key, ' : ', value)
-    return all_headlines
+    return {"headlines": all_headlines, "schema": schemaDict, "categorised": []}
 
 
 def beavertonScrape():
