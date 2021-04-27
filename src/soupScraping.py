@@ -106,6 +106,7 @@ def dailymashScrape(max_headlines, category=""):
         "author": "thedailymash",
         "datePublished": "",
         "description": "",
+        "aboutKey": "",
         "publisher": {"@type": "Organization", "name": "Digitalbox"}
     }
     for i in range(100):
@@ -116,7 +117,7 @@ def dailymashScrape(max_headlines, category=""):
         print("Scraping The Daily Mash with GET request to " + url)
         headlines = soup1.find_all('div', {'class': 'holder'})
         for headline in headlines:
-            
+
             headlineStripped = headline.find_all('a')
             for headline2 in headlineStripped:
                 newPage = requests.get(headline2['href'])
@@ -124,6 +125,7 @@ def dailymashScrape(max_headlines, category=""):
                 i = soup2.find('time')
                 data = dict(schemaDict)
                 data["datePublished"] = i['datetime']
+                data["aboutKey"] = newPage
                 headlineString = headline2.text
                 for entities in nlp.GetHeadlineNLP().nlp_extract(headlineString)["entities"].values():
                     if entities == "PERSON":
@@ -241,16 +243,17 @@ def guardianScrape(max_headlines, category=[]):
         "author": "",
         "datePublished": "",
         "description": "",
+        "aboutKey": "",
         "publisher": {"@type": "Organization", "name": "The Guardian"}
     }
-    
+
     for p in range(total_pages):
         url = f"https://content.guardianapis.com/search?" + f"api-key={apikey}" + f"&query-fields=headline&show-tags=contributor&from-date={begin_date}" + (f"&q={query}" if query else f"") + f"&page={p+1}"
         print("Querying The Guardian database with GET request to " + url)
         r = requests.get(url)
         if 'response' in r.json():
             for data in r.json()['response']['results']:
-                
+
                 if count < (max_headlines):
                     to_add = dict(schemaDict)
                     to_add["headline"] = data['webTitle'].split('|', 1)[0]
@@ -264,6 +267,7 @@ def guardianScrape(max_headlines, category=[]):
                         if key in category:
                             categorisedHeadlines[key].append(data['webTitle'].split('|', 1)[0])
                     all_headlines.append(data['webTitle'].split('|', 1)[0])
+                    to_add["aboutKey"] = data['webUrl']
                     count += 1
                     schemaList.append(to_add)
                 else:
