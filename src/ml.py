@@ -89,7 +89,9 @@ def headlineToTrainingEntry(headline):
     data = nlp.GetHeadlineNLP().nlp_extract(headline)
     
     # Sentiment analysis
-    output[0] = int(round(textblob.TextBlob(headline).sentiment.polarity))
+    sentiment = textblob.TextBlob(headline).sentiment
+    output[0] = int(round(sentiment.polarity))
+    output[1] = int(round(sentiment.subjectivity * 4))
     
     # These entity counts are very rigid, non useful measures of "parody or not"
     # While the probabilistic relationship may hold between a particular pair of websites or headline styles,
@@ -97,12 +99,10 @@ def headlineToTrainingEntry(headline):
     # but context and juxtaposition should differentiate them
     # For instance, the seemingly random use of profanity in a parody headline vs usage in a quote or subject name in a real news headline.
     #for ent in data["entities"]:
-        #if (data["entities"][ent] == "PERSON"):
-            #output[0] += 1
-        #elif (data["entities"][ent] == "GPE"):
-            #output[1] += 1
-        #elif (data["entities"][ent] == "CARDINAL"):
-            #output[2] += 1
+    #    if (data["entities"][ent] == "PERSON"):
+    #        output[0] += 1
+    #    elif (data["entities"][ent] == "GPE"):
+    #        output[1] += 1
     for adj in data["adjectives"]:
         if adj not in exclusive_real_adjectives:
             # This does rely on having a large training set, but it's more accurate than checking for any adjective
