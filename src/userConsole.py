@@ -18,7 +18,6 @@ import ml
 def filterChoice(filterFile):
     noOfFilters = int(input('Do you want to filter ' + filterFile +' by 1 or multiple terms? Choose \n 1. 1 term' \
         '\n 2. Multiple terms \n'))
-    
     if noOfFilters == 1:
         print("What term to you want to filter by? Here are the categories:")
         for k, v in CV.items():
@@ -26,73 +25,57 @@ def filterChoice(filterFile):
         filterTerm = input("What term do you want to filter by? \n")
         if(any(filterTerm in value for value in CV.values())):
             print('Filter by ' + filterTerm)
-            # MACHINE LEARNING
         else:
             print("Please choose a category to filter by")
-            
     elif noOfFilters == 2:
         print("What term to you want to filter by? Here are the categories:")
         for k, v in CV.items():
             print('{key}: {values}'.format(key=k, values=', '.join('{}'.format(', '.join(x.split())) for x in v)))            
         filterTerms = input("What terms do you want to filter by? (Split up the terms with a ', ' (comma)) \n")
         terms_list = re.split("[, ] ", filterTerms)
-        print(terms_list)
-        # MACHINE LEARNING
+        #print(terms_list)
     else:
         print('Choose either options 1 or 2')
-        
+
 def HeadlineInput():
     print("You've picked to input a headline")
-    Headline = input("Please input in a headline:\n")
-    filterChoice(Headline)
-    # Do machine learning
-    ml.demo(Headline)
+    return input("Please input in a headline:\n")
 
-def URLInput():
-    # NEEDS TO BE LOOKED AT
-    print("You've picked to input a URL")
-    URL = input("Please input in a URL:\n")
-    http = urllib3.PoolManager()
-    try:
-        response = http.request('GET', URL)
-    except urllib3.exceptions.HTTPError:
-        if hasattr(e, 'reason'):
-            print ('We failed to reach a server.')
-            print ('Reason: ', e.reason)
-        elif hasattr(e, 'code'):
-            print ('The server couldn\'t fulfill the request.')
-            print ('Error code: ', e.code)
-    else:
-        print ("URL is valid!")
-        filterChoice(URL)
+def GetOutputDir():
+    return input("Please specify an output file path:\n")
 
 def URLInputInStyle():
-    print("You've picked to input a URL")
     validURL = False
     while validURL == False:
-        URL = "http://" + input("Please input in a URL:\n")
+        URL = input("Please input in a valid URL:\n")
+        if "http://" not in URL and "https://" not in URL:
+            URL = "http://" + URL
         try:
             r = requests.get(URL)
             if r.status_code == 200:
                 validURL = True
                 print('URL is valid!')
-                filterChoice(URL)
+                return True
             else:
-                print('URL is not valid or the server couldn\'t fufill the request') 
+                print("URL is not valid or the server couldn't fulfill the request.")
         except requests.exceptions.ConnectionError:
-            print('We failed to reach the server you supplied.')
+            print('Failed to reach the server.')
 
-def run_guide ():
-
-    userInput = int(input("Hello, this is the parody headline checker!S \n To begin choose between:" \
-                      "\n 1.Input a URL" \
+def run_guide():
+    userInput = int(input("Hello, this is the parody headline checker!\nTo begin choose between:" \
+                      "\n 1. Input a URL" \
                       "\n 2. Input a headline" \
-                      "\n Choose 1 or 2 \n "))
+                      "\n Choose (1) or (2):\n"))
+    
+    headline = ""
     if userInput == 1:
-        URLInputInStyle()
-
+        headline = URLInputInStyle()
     elif userInput == 2:
-        HeadlineInput()
-
+        headline = HeadlineInput()
     else:
-        print("Choose either 1 or 2")
+        print("Invalid option.")
+        run_guide()
+    
+    if (headline):
+        filterChoice(headline)
+        ml.demo(headline)
