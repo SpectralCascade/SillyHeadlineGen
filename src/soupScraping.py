@@ -109,9 +109,6 @@ def beavertonScrape():
                     headlineString = headline2.text
                     writer.writerow([headlineString])
 
-#dailymashScrape(40)
-
-
 def newYTScrape(max_headlines, category = ""):
 
     all_headlines = []
@@ -174,23 +171,6 @@ def guardianScrape(max_headlines, category=""):
 
     return all_headlines
 
-
-<<<<<<< HEAD
-newYTScrape(10)
-
-# if __name__ == "__main__":
-#     import nlp
-#
-#     nyt_headlines = newYTScrape(50)
-#     dm_headlines = dailymashScrape(50)
-#     print("NYT headlines:")#\n{nyt_headlines}\n\nThe Daily Mash headlines:\n{dm_headlines}")
-#     for headline in nyt_headlines:
-#         extracted = nlp.GetHeadlineNLP().nlp_extract(headline)
-#         print(f"{headline} => {extracted}")
-#     for headline in dm_headlines:
-#         extracted = nlp.GetHeadlineNLP().nlp_extract(headline)
-#         print(f"{headline} => {extracted}")
-=======
 if __name__ == "__main__":
     import nlp
 
@@ -207,4 +187,3 @@ if __name__ == "__main__":
                     adjectives.add(adj)
                     writer.writerow([adj])
     print("Finished output in data/exclusive_real_adjectives.csv")
->>>>>>> 5d12dee881f76cf0f90b688ab742c41f3be5bf22
