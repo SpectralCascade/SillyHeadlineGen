@@ -37,7 +37,7 @@ def createXML(directory, completedict, schemaString):
 
     finalTree = ET.ElementTree(title)
     xmlOutputString = ET.tostring(title, encoding ='utf-8', method ='xml')
-    xmlOutputString = '<?xml version="1.0"?>' +"<rdf:RDF xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' xmlns:article='https://schema.org/NewsArticle'"  + + str(xmlOutputString) + schemaString + "</rdf:RDF>"
+    xmlOutputString = '<?xml version="1.0"?>' +"<rdf:RDF xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' xmlns:article='https://schema.org/NewsArticle'" + str(xmlOutputString) + schemaString + "</rdf:RDF>"
     with open(directory + '/outputData' + str(filecount) + '.xml', 'w') as outputFile: 
         outputFile.write(xmlOutputString)
 
