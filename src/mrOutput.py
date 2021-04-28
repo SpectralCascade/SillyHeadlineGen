@@ -12,6 +12,7 @@ def createJSON(directory, inputDict):
     #open a new file and dump the dictionary to it
     with open(directory + '/outputData' + str(filecount) + '.json', 'w') as outputFile:
         json.dump(inputDict, outputFile, indent=4)
+        print("Saved JSON file to " + directory + '/outputData' + str(filecount) + '.json')
 
 def createXML(directory, completedict, schemaString):
     global filecount
@@ -40,6 +41,7 @@ def createXML(directory, completedict, schemaString):
     xmlOutputString = '<?xml version="1.0"?>' +"<rdf:RDF xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' xmlns:article='https://schema.org/NewsArticle'" + str(xmlOutputString) + schemaString + "</rdf:RDF>"
     with open(directory + '/outputData' + str(filecount) + '.xml', 'w') as outputFile: 
         outputFile.write(xmlOutputString)
+        print("Saved XML file to " + directory + '/outputData' + str(filecount) + '.xml')
 
 def exportchoice(directory, results):
     global filecount
