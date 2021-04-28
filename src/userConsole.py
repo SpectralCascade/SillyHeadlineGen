@@ -10,6 +10,7 @@ import urllib3.request
 import urllib3.exceptions
 import re
 import requests
+import mrOutput
 
 from CV import CV
 
@@ -81,8 +82,8 @@ def run_guide():
     
     if (headline):
         filterChoice(headline)
-        output = uc.GetOutputDir()
-        results = ml.demo(headlines, filterTerms)
+        output = GetOutputDir()
+        results = ml.demo([headline], filterTerms)
         for result in results:
             # Send to machine readable output
             mrOutput.exportchoice(output, result)

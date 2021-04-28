@@ -1,6 +1,6 @@
 {
     "output": "Output",
-    "inputHeadline": "poo is shit",
+    "inputHeadline": "Man who had no problem with police murdering suspect suddenly very concerned about fair trials",
     "predictionModel": {
         "Not realistic": [
             {
@@ -40,8 +40,8 @@
         ]
     },
     "outcomeProbabilities": {
-        "Not realistic": 0.005714377500000013,
-        "Realistic": 0.002910000000000005
+        "Not realistic": 0.0016117475000000032,
+        "Realistic": 0.0007275000000000009
     },
     "result": "Not realistic",
     "schema": [
@@ -1349,10 +1349,49 @@
             "@context": "schema.org",
             "@type": "NewsArticle",
             "headline": "Australia news live: health officials say hotel quarantine \u2018fit for purpose\u2019; Port Arthur massacre commemorated",
-            "author": "Matilda Boseley, Melissa Davey, Ben Butler, Lorena Allam, Lisa Cox, Paul Karp, Elias Visontay, Daniel Hurst",
-            "datePublished": "2021-04-27T23:25:26Z",
+            "author": "Matilda Boseley, Daniel Hurst, Paul Karp, Melissa Davey, Ben Butler, Lorena Allam, Lisa Cox, Elias Visontay",
+            "datePublished": "2021-04-28T00:40:57Z",
             "description": "",
             "aboutKey": "https://www.theguardian.com/australia-news/live/2021/apr/28/australia-news-live-health-hotel-quarantine-covid-transmission-india-repatriation-port-arthur-massacre",
+            "publisher": {
+                "@type": "Organization",
+                "name": "The Guardian"
+            }
+        },
+        {
+            "@context": "schema.org",
+            "@type": "NewsArticle",
+            "headline": "Football League roundup: Duff dances after Cheltenham seal promotion",
+            "author": "Guardian sport",
+            "datePublished": "2021-04-28T00:22:10Z",
+            "description": "",
+            "aboutKey": "https://www.theguardian.com/football/2021/apr/28/football-league-roundup-cheltenham-michael-duff-dances-after-sealing-promotion",
+            "publisher": {
+                "@type": "Organization",
+                "name": "The Guardian"
+            }
+        },
+        {
+            "@context": "schema.org",
+            "@type": "NewsArticle",
+            "headline": "Biden hails \u2018stunning progress\u2019 on Covid but warns Americans: \u2018Do not let up now\u2019 \u2013 as it happened",
+            "author": "Maanvi Singh, Joanna Walters, David Smith, Hannah Ellis-Petersen",
+            "datePublished": "2021-04-28T00:15:39Z",
+            "description": "",
+            "aboutKey": "https://www.theguardian.com/us-news/live/2021/apr/27/joe-biden-covid-coronavirus-us-politics-live-latest",
+            "publisher": {
+                "@type": "Organization",
+                "name": "The Guardian"
+            }
+        },
+        {
+            "@context": "schema.org",
+            "@type": "NewsArticle",
+            "headline": "More countries tighten travel restrictions for arrivals from India \u2013 as it happened",
+            "author": "Alison Rourke, Martin Belam, Ben Quinn, Lucy Campbell, Jedidajah Otte, Tom Phillips, Ian Sample, Angela Giuffrida, Kate Connolly, Stephen Burgen, Ali Martin, Elias Visontay, Sarah Martin, Christopher Knaus, Haroon Siddique",
+            "datePublished": "2021-04-27T23:32:42Z",
+            "description": "",
+            "aboutKey": "https://www.theguardian.com/world/live/2021/apr/27/coronavirus-live-news-uk-donated-ventilators-and-oxygen-supplies-arrive-in-india",
             "publisher": {
                 "@type": "Organization",
                 "name": "The Guardian"
@@ -1374,11 +1413,11 @@
         {
             "@context": "schema.org",
             "@type": "NewsArticle",
-            "headline": "Coronavirus live news: more countries tighten travel restrictions for arrivals from India",
-            "author": "Alison Rourke, Martin Belam, Ben Quinn, Lucy Campbell, Jedidajah Otte, Tom Phillips, Ian Sample, Angela Giuffrida, Kate Connolly, Stephen Burgen, Ali Martin, Elias Visontay, Sarah Martin, Christopher Knaus, Haroon Siddique",
-            "datePublished": "2021-04-27T23:06:16Z",
+            "headline": "TUC calls for immediate public inquiry into Covid deaths",
+            "author": "Robert Booth",
+            "datePublished": "2021-04-27T23:01:18Z",
             "description": "",
-            "aboutKey": "https://www.theguardian.com/world/live/2021/apr/27/coronavirus-live-news-uk-donated-ventilators-and-oxygen-supplies-arrive-in-india",
+            "aboutKey": "https://www.theguardian.com/world/2021/apr/28/tuc-calls-for-immediate-public-inquiry-into-covid-deaths",
             "publisher": {
                 "@type": "Organization",
                 "name": "The Guardian"
@@ -1413,19 +1452,6 @@
         {
             "@context": "schema.org",
             "@type": "NewsArticle",
-            "headline": "TUC calls for immediate public inquiry into Covid deaths",
-            "author": "Robert Booth",
-            "datePublished": "2021-04-27T23:01:18Z",
-            "description": "",
-            "aboutKey": "https://www.theguardian.com/world/2021/apr/28/tuc-calls-for-immediate-public-inquiry-into-covid-deaths",
-            "publisher": {
-                "@type": "Organization",
-                "name": "The Guardian"
-            }
-        },
-        {
-            "@context": "schema.org",
-            "@type": "NewsArticle",
             "headline": "\u2018Self-driving\u2019 cars could get green light for use on UK motorways this year",
             "author": "Gwyn Topham",
             "datePublished": "2021-04-27T23:01:17Z",
@@ -1444,19 +1470,6 @@
             "datePublished": "2021-04-27T23:00:18Z",
             "description": "",
             "aboutKey": "https://www.theguardian.com/crosswords/cryptic/28431",
-            "publisher": {
-                "@type": "Organization",
-                "name": "The Guardian"
-            }
-        },
-        {
-            "@context": "schema.org",
-            "@type": "NewsArticle",
-            "headline": "Biden hails \u2018stunning progress\u2019 on Covid but warns Americans: \u2018Do not let up now\u2019 \u2013 live",
-            "author": "Maanvi Singh, Joanna Walters, David Smith, Hannah Ellis-Petersen",
-            "datePublished": "2021-04-27T23:00:04Z",
-            "description": "",
-            "aboutKey": "https://www.theguardian.com/us-news/live/2021/apr/27/joe-biden-covid-coronavirus-us-politics-live-latest",
             "publisher": {
                 "@type": "Organization",
                 "name": "The Guardian"
@@ -1881,6 +1894,19 @@
         {
             "@context": "schema.org",
             "@type": "NewsArticle",
+            "headline": "With a stronger quarantine system, Australia could offer more help to those trapped in India ",
+            "author": "",
+            "datePublished": "2021-04-27T17:30:12Z",
+            "description": "",
+            "aboutKey": "https://www.theguardian.com/commentisfree/2021/apr/28/with-a-stronger-quarantine-system-australia-could-offer-more-help-to-those-trapped-in-india",
+            "publisher": {
+                "@type": "Organization",
+                "name": "The Guardian"
+            }
+        },
+        {
+            "@context": "schema.org",
+            "@type": "NewsArticle",
             "headline": "Why Australia is under pressure to upgrade advice on Covid\u2019s aerosol transmission",
             "author": "Melissa Davey",
             "datePublished": "2021-04-27T17:30:12Z",
@@ -1899,19 +1925,6 @@
             "datePublished": "2021-04-27T17:30:12Z",
             "description": "",
             "aboutKey": "https://www.theguardian.com/fashion/2021/apr/28/people-are-just-putting-random-things-on-their-face-the-temptation-of-add-on-beauty-products",
-            "publisher": {
-                "@type": "Organization",
-                "name": "The Guardian"
-            }
-        },
-        {
-            "@context": "schema.org",
-            "@type": "NewsArticle",
-            "headline": "With a stronger quarantine system, Australia could offer more help to those trapped in India ",
-            "author": "",
-            "datePublished": "2021-04-27T17:30:12Z",
-            "description": "",
-            "aboutKey": "https://www.theguardian.com/commentisfree/2021/apr/28/with-a-stronger-quarantine-system-australia-could-offer-more-help-to-those-trapped-in-india",
             "publisher": {
                 "@type": "Organization",
                 "name": "The Guardian"
@@ -1946,11 +1959,11 @@
         {
             "@context": "schema.org",
             "@type": "NewsArticle",
-            "headline": "\u2018Deeply concerning\u2019: government consultant made millions from NSW environmental offsets ",
-            "author": "Lisa Cox",
+            "headline": "The Guardian view on fire-and-rehire business tactics: change the law ",
+            "author": "Editorial",
             "datePublished": "2021-04-27T17:30:11Z",
             "description": "",
-            "aboutKey": "https://www.theguardian.com/environment/2021/apr/28/deeply-concerning-government-consultant-made-millions-from-nsw-environmental-offsets",
+            "aboutKey": "https://www.theguardian.com/commentisfree/2021/apr/27/the-guardian-view-on-fire-and-rehire-business-tactics-change-the-law",
             "publisher": {
                 "@type": "Organization",
                 "name": "The Guardian"
@@ -1959,11 +1972,11 @@
         {
             "@context": "schema.org",
             "@type": "NewsArticle",
-            "headline": "The Guardian view on fire-and-rehire business tactics: change the law ",
-            "author": "Editorial",
+            "headline": "\u2018Deeply concerning\u2019: government consultant made millions from NSW environmental offsets ",
+            "author": "Lisa Cox",
             "datePublished": "2021-04-27T17:30:11Z",
             "description": "",
-            "aboutKey": "https://www.theguardian.com/commentisfree/2021/apr/27/the-guardian-view-on-fire-and-rehire-business-tactics-change-the-law",
+            "aboutKey": "https://www.theguardian.com/environment/2021/apr/28/deeply-concerning-government-consultant-made-millions-from-nsw-environmental-offsets",
             "publisher": {
                 "@type": "Organization",
                 "name": "The Guardian"
@@ -2609,19 +2622,6 @@
         {
             "@context": "schema.org",
             "@type": "NewsArticle",
-            "headline": "The Bike Thief review \u2013 a clear-eyed, unsentimental study of immigrant life",
-            "author": "Phuong Le",
-            "datePublished": "2021-04-27T14:00:07Z",
-            "description": "",
-            "aboutKey": "https://www.theguardian.com/film/2021/apr/27/the-bike-thief-review-a-clear-eyed-unsentimental-study-of-immigrant-life",
-            "publisher": {
-                "@type": "Organization",
-                "name": "The Guardian"
-            }
-        },
-        {
-            "@context": "schema.org",
-            "@type": "NewsArticle",
             "headline": "Beast Beast review \u2013 insultingly shallow take on gun violence",
             "author": "Phuong Le",
             "datePublished": "2021-04-27T14:00:07Z",
@@ -2635,11 +2635,11 @@
         {
             "@context": "schema.org",
             "@type": "NewsArticle",
-            "headline": "Thousands of supporters join staff at Mike Pence\u2019s publisher in campaign against book deal",
-            "author": "Alison Flood",
-            "datePublished": "2021-04-27T13:55:17Z",
+            "headline": "The Bike Thief review \u2013 a clear-eyed, unsentimental study of immigrant life",
+            "author": "Phuong Le",
+            "datePublished": "2021-04-27T14:00:07Z",
             "description": "",
-            "aboutKey": "https://www.theguardian.com/books/2021/apr/27/simon-and-schuster-staff-campaign-against-book-deal-mike-pence",
+            "aboutKey": "https://www.theguardian.com/film/2021/apr/27/the-bike-thief-review-a-clear-eyed-unsentimental-study-of-immigrant-life",
             "publisher": {
                 "@type": "Organization",
                 "name": "The Guardian"
